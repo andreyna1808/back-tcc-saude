@@ -1,15 +1,32 @@
 package user.medicine.api.demo.services
 
 import org.springframework.stereotype.Service
+import user.medicine.api.demo.dtos.QuestionUpdateDTO
 import user.medicine.api.demo.models.Question
 import user.medicine.api.demo.repositories.QuestionRepository
 
 @Service
-class QuestionService(private val questionRepository: QuestionRepository) {
+class QuestionService(
+    private val questionRepository: QuestionRepository,
+    private val userService: UserService // Adicione o UserService para atualizar o usuário
+) {
 
     fun createQuestion(question: Question): Question {
-        // Salva a pergunta no banco de dados e retorna a mesma pergunta
-        return questionRepository.save(question)
+        // Verifica se o usuário existe
+        val user = userService.getUserById(question.userId)
+
+        // Salva a pergunta no banco de dados
+        val savedQuestion = questionRepository.save(question)
+
+        // Adiciona o ID da pergunta à lista de perguntas do usuário
+        userService.addQuestionToUser(question.userId, savedQuestion.id!!)
+
+        return savedQuestion
+    }
+
+
+    fun getAllQuestions(): List<Question> {
+        return questionRepository.findAll()
     }
 
     fun getQuestionById(id: String): Question {
@@ -17,14 +34,15 @@ class QuestionService(private val questionRepository: QuestionRepository) {
         return questionRepository.findById(id).orElseThrow { RuntimeException("Question not found") }
     }
 
-    fun updateQuestion(id: String, updatedQuestion: Question): Question {
+    fun updateQuestion(id: String, updatedQuestionDTO: QuestionUpdateDTO): Question {
         // Busca a pergunta existente pelo ID
         val existingQuestion = getQuestionById(id)
 
         // Informações atualizadas
         val updatedQuestionEntity = existingQuestion.copy(
-            content = updatedQuestion.content,
-            anonymous = updatedQuestion.anonymous
+            content = updatedQuestionDTO.content ?: existingQuestion.content,
+            anonymous = updatedQuestionDTO.anonymous ?: existingQuestion.anonymous,
+            likes = updatedQuestionDTO.likes ?: existingQuestion.likes
         )
 
         // Salva a pergunta atualizada no banco de dados e retorna a pergunta atualizada
