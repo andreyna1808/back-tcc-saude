@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.ResponseStatus
 class NicknameAlreadyExistsException(message: String) : RuntimeException(message)
 class CrmAlreadyExistsException(message: String) : RuntimeException(message)
 class InvalidCrmException(message: String) : RuntimeException(message)
+class UserNotFoundException(message: String) : RuntimeException(message)
+class QuestionNotFoundException(message: String) : RuntimeException(message)
+class DoctorNotFoundException(message: String) : RuntimeException(message)
 
 @ControllerAdvice
 class GlobalExceptionHandler {

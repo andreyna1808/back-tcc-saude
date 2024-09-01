@@ -3,23 +3,37 @@ package user.medicine.api.demo.services
 import org.springframework.stereotype.Service
 import user.medicine.api.demo.models.Doctor
 import user.medicine.api.demo.repositories.DoctorRepository
-import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.web.client.RestTemplate
 import user.medicine.api.demo.dtos.DoctorUpdateDTO
 import user.medicine.api.demo.exceptions.CrmAlreadyExistsException
-import user.medicine.api.demo.exceptions.InvalidCrmException
 import user.medicine.api.demo.exceptions.NicknameAlreadyExistsException
-import user.medicine.api.demo.models.User
+import user.medicine.api.demo.exceptions.UserNotFoundException
+import user.medicine.api.demo.models.Answer
+import user.medicine.api.demo.repositories.AnswerRepository
 
 @Service
-class DoctorService(private val doctorRepository: DoctorRepository) {
+class DoctorService(
+    private val doctorRepository: DoctorRepository,
+    private val answerRepository: AnswerRepository
+) {
+
+    fun addAnswerToDoctor(doctorId: String, answerId: String) {
+        val doctor = try {
+            getDoctorById(doctorId)
+        } catch (e: RuntimeException) {
+            throw UserNotFoundException("User not found")
+        }
+
+        val updatedAnswer = doctor.answers + answerId
+        val updatedUser = doctor.copy(answers = updatedAnswer)
+        doctorRepository.save(updatedUser)
+    }
 
     fun registerDoctor(doctor: Doctor): Doctor {
-        // Verifica se o CRM já existe
+        // Valida se o CRM ou o e-mail já existem
         if (doctorRepository.existsByCrm(doctor.crm)) {
-            throw CrmAlreadyExistsException("CRM já está em uso")
+            throw CrmAlreadyExistsException("CRM already exists")
         } else if (doctorRepository.existsByEmail(doctor.email)) {
-            throw NicknameAlreadyExistsException("Email já está em uso")
+            throw NicknameAlreadyExistsException("Email already exists")
         }
 
         // Validação do CRM
@@ -27,7 +41,7 @@ class DoctorService(private val doctorRepository: DoctorRepository) {
 //            throw InvalidCrmException("CRM inválido")
 //        }
 
-        // Lógica para criar um novo médico
+        // Salva o médico no banco de dados
         return doctorRepository.save(doctor)
     }
 
@@ -51,7 +65,7 @@ class DoctorService(private val doctorRepository: DoctorRepository) {
 
         // Verifica se o CRM já existe para outro médico (exceto o médico atual)
         if (doctorRepository.existsByCrm(updatedCrm) && updatedCrm != existingDoctor.crm) {
-            throw IllegalArgumentException("CRM já está em uso")
+            throw IllegalArgumentException("CRM already exists")
         }
 
         // Atualiza as informações do médico
@@ -59,7 +73,8 @@ class DoctorService(private val doctorRepository: DoctorRepository) {
             name = updatedDoctorDTO.name ?: existingDoctor.name,
             email = updatedDoctorDTO.email ?: existingDoctor.email,
             password = updatedDoctorDTO.password ?: existingDoctor.password,
-            crm = updatedCrm
+            crm = updatedCrm,
+            profileImageUrl = updatedDoctorDTO.profileImageUrl // Aceita null se for explicitamente fornecido
         )
 
         // Salva o médico atualizado no banco de dados e retorna o médico atualizado
@@ -72,6 +87,15 @@ class DoctorService(private val doctorRepository: DoctorRepository) {
         val doctor = getDoctorById(id)
         doctorRepository.delete(doctor)
     }
+
+    fun getDoctorAnswers(id: String): List<Answer> {
+        // Busca o médico pelo ID e verifica se ele existe
+        val doctor = getDoctorById(id)
+
+        // Busca todas as respostas associadas ao médico usando a lista de IDs
+        return answerRepository.findByDoctorId(doctor.id!!)
+    }
+
 
 //    private fun validateCRM(crm: String): Boolean {
 //        // Implementação da validação do CRM via API externa
