@@ -6,19 +6,16 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtFilter: JwtFilter,
-    private val userDetailsService: UserDetailsService
 ) {
 
     @Bean
@@ -26,7 +23,7 @@ class SecurityConfig(
         http.csrf { csrf ->
             csrf.disable() // Desativa CSRF
         }.authorizeHttpRequests { authz ->
-            authz.requestMatchers("/api/*/login", "/api/*/register")
+            authz.requestMatchers("/api/auth/*/login", "/api/auth/logout", "/api/*/register")
                 .permitAll() // Permite acesso aos endpoints de login
                 .anyRequest().authenticated() // Exige autenticação para outras requisições
         }.sessionManagement { session ->

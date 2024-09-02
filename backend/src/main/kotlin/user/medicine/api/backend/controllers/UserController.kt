@@ -1,17 +1,13 @@
 package user.medicine.api.backend.controllers
 
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import user.medicine.api.backend.configs.JwtUtil
-import user.medicine.api.backend.dtos.DoctorUpdateDTO
 import user.medicine.api.backend.dtos.UserUpdateDTO
 import user.medicine.api.backend.models.User
-import user.medicine.api.backend.models.Question
 import user.medicine.api.backend.services.FileStorageService
 import user.medicine.api.backend.services.LikeService
-import user.medicine.api.backend.services.UserDetailsService
 import user.medicine.api.backend.services.UserService
 import java.io.File
 
@@ -21,7 +17,6 @@ class UserController(
     private val userService: UserService,
     private val fileStorageService: FileStorageService,
     private val likeService: LikeService,
-    private val userDetailsService: UserDetailsService,
     private val jwtUtil: JwtUtil
 ) {
 
@@ -91,25 +86,5 @@ class UserController(
         val imageUrl = user.profileImageUrl ?: throw RuntimeException("Image not found")
         val file = fileStorageService.getFile(imageUrl.substringAfter("/uploads/"))
         return ResponseEntity.ok(file)
-    }
-
-    @PostMapping("/login")
-    fun login(@RequestBody loginRequest: Map<String, String>): ResponseEntity<Any> {
-        val email = loginRequest["email"]
-        val password = loginRequest["password"]
-
-        if (email != null && password != null) {
-            try {
-                val userDetails = userDetailsService.loadUserByUsername(email)
-                if (userDetails.password == password) {
-                    val token = jwtUtil.generateToken(email)
-                    return ResponseEntity.ok(mapOf("token" to token))
-                }
-            } catch (e: Exception) {
-                // Handle user not found
-            }
-        }
-
-        return ResponseEntity.status(401).body("Invalid credentials")
     }
 }
