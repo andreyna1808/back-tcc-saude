@@ -3,10 +3,29 @@
     padding: 0;
     margin: 0;
     color: #EFEFEF;
+    font-size: 17px;
 }
 
 main {
     background: #343A40;
     width: 100vw;
     height: 95vh;
+}
+
+button {
+    border: none;
+    padding: 4px;
+    border-radius: 5px;
+    background: green;
+    width: 80px;
+    height: 40px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #228B22;
+}
+
+button:active {
+    background: green;
 }
