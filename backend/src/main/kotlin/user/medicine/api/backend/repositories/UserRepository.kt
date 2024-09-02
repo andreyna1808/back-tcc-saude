@@ -7,4 +7,5 @@ import user.medicine.api.backend.models.User
 interface UserRepository : MongoRepository<User, String> {
     fun existsByNickname(nickname: String): Boolean
     fun existsByEmail(email: String): Boolean
+    fun findByEmail(email: String): User?
 }
