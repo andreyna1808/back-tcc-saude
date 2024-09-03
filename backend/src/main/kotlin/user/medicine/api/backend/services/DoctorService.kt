@@ -1,5 +1,6 @@
 package user.medicine.api.backend.services
 
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import user.medicine.api.backend.models.Doctor
 import user.medicine.api.backend.repositories.DoctorRepository
@@ -13,12 +14,14 @@ import user.medicine.api.backend.repositories.AnswerRepository
 @Service
 class DoctorService(
     private val doctorRepository: DoctorRepository,
-    private val answerRepository: AnswerRepository
+    private val answerRepository: AnswerRepository,
+    @Lazy private val answerService: AnswerService,
+    @Lazy private val questionService: QuestionService
 ) {
 
     fun addAnswerToDoctor(doctorId: String, answerId: String) {
         val doctor = try {
-            getDoctorById(doctorId)
+            getById(doctorId)
         } catch (e: RuntimeException) {
             throw UserNotFoundException("User not found")
         }
@@ -50,20 +53,43 @@ class DoctorService(
         return doctorRepository.findAll()
     }
 
+    fun getDoctorById(id: String): Map<String, Any?> {
+        val doctor = doctorRepository.findById(id).orElseThrow { RuntimeException("Doctor not found") }
+        // Buscar as respostas associadas ao médico
+        val answers = doctor.answers.map { it ->
+            val answer = answerService.getById(it)
+            val question = questionService.getById(answer.questionId)
+            mapOf(
+                "id" to answer.id,
+                "questionData" to mapOf(
+                    "id" to question.id,
+                    "content" to question.content
+                ),
+                "content" to answer.content,
+                "likes" to answer.likes
+            )
+        }
+        return mapOf(
+            "id" to doctor.id,
+            "name" to doctor.name,
+            "crm" to doctor.crm,
+            "email" to doctor.email,
+            "specialty" to doctor.specialty,
+            "answers" to answers,
+            "likedQuestions" to doctor.likedQuestions,
+            "likedAnswers" to doctor.likedAnswers,
+            "profileImageUrl" to doctor.profileImageUrl
+        )
+    }
 
-    fun getDoctorById(id: String): Doctor {
+    fun getById(id: String): Doctor {
         // Busca o médico pelo ID. Se não encontrar, lança uma exceção
         return doctorRepository.findById(id).orElseThrow { RuntimeException("Doctor not found") }
     }
 
-    fun getDoctorByEmail(email: String): Doctor {
-        // Busca o médico pelo ID. Se não encontrar, lança uma exceção
-        return doctorRepository.findDoctorByEmail(email)
-    }
-
     fun updateDoctor(id: String, updatedDoctorDTO: DoctorUpdateDTO): Doctor {
         // Busca o médico existente pelo ID
-        val existingDoctor = getDoctorById(id)
+        val existingDoctor = getById(id)
 
         // Se o CRM não foi fornecido na atualização, usa o CRM existente
         val updatedCrm = updatedDoctorDTO.crm ?: existingDoctor.crm
@@ -89,13 +115,13 @@ class DoctorService(
 
     fun deleteDoctor(id: String) {
         // Busca o médico pelo ID e o deleta do banco de dados
-        val doctor = getDoctorById(id)
+        val doctor = getById(id)
         doctorRepository.delete(doctor)
     }
 
     fun getDoctorAnswers(id: String): List<Answer> {
         // Busca o médico pelo ID e verifica se ele existe
-        val doctor = getDoctorById(id)
+        val doctor = getById(id)
 
         // Busca todas as respostas associadas ao médico usando a lista de IDs
         return answerRepository.findByDoctorId(doctor.id!!)

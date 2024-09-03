@@ -1,5 +1,6 @@
 package user.medicine.api.backend.services
 
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import user.medicine.api.backend.repositories.UserRepository
 import user.medicine.api.backend.repositories.QuestionRepository
@@ -14,6 +15,8 @@ class UserService(
     private val userRepository: UserRepository,
     private val questionRepository: QuestionRepository, // Adicione o repositório de perguntas
     private val answerRepository: AnswerRepository,
+    @Lazy private val questionService: QuestionService,
+    @Lazy private val answerService: AnswerService
 ) {
 
     fun registerUser(user: User): User {
@@ -28,23 +31,62 @@ class UserService(
         return userRepository.save(user)
     }
 
-    fun getAllUsers(): List<User> {
-        // Retorna todos os usuários do banco de dados
-        return userRepository.findAll()
+    fun getAllUsers(): List<Map<String, Any?>> {
+        val users = userRepository.findAll()
+        return users.map { user ->
+            // Buscar as perguntas associadas ao usuário
+            val questions = user.questions.map { questionId ->
+                val question = questionService.getById(questionId)
+                val answers = answerService.getAnswersByQuestionId(question.id!!)
+                mapOf(
+                    "id" to question.id, "content" to question.content, "likes" to question.likes, "answers" to answers
+                )
+            }
+            mapOf(
+                "id" to user.id,
+                "name" to user.name,
+                "nickname" to user.nickname,
+                "email" to user.email,
+                "blockedComment" to user.blockedComment,
+                "questions" to questions,
+                "likedQuestions" to user.likedQuestions,
+                "likedAnswers" to user.likedAnswers,
+                "profileImageUrl" to user.profileImageUrl
+            )
+        }
     }
 
-    fun getUserById(id: String): User {
+    fun getUserById(id: String): Map<String, Any?> {
+        val user = userRepository.findById(id).orElseThrow { RuntimeException("User not found") }
+        // Buscar as perguntas associadas ao usuário
+        val questions = user.questions.map { questionId ->
+            val question = questionService.getById(questionId)
+            val answers = answerService.getAnswersByQuestionId(question.id!!)
+            mapOf(
+                "id" to question.id, "content" to question.content, "likes" to question.likes, "answers" to answers
+            )
+        }
+        return mapOf(
+            "id" to user.id,
+            "name" to user.name,
+            "nickname" to user.nickname,
+            "email" to user.email,
+            "blockedComment" to user.blockedComment,
+            "questions" to questions,
+            "likedQuestions" to user.likedQuestions,
+            "likedAnswers" to user.likedAnswers,
+            "profileImageUrl" to user.profileImageUrl
+        )
+    }
+
+    fun getById(id: String): User {
         // Busca o usuário pelo ID. Se não encontrar, lança uma exceção
         return userRepository.findById(id).orElseThrow { RuntimeException("User not found") }
     }
 
-    fun getUserByEmail(email: String): User {
-        return userRepository.findUserByEmail(email)
-    }
-
     fun updateUser(id: String, updatedUserDTO: UserUpdateDTO): User {
         // Busca o usuário existente pelo ID
-        val existingUser = getUserById(id)
+        val existingUser = getById(id)
 
         // Se o nickname não foi fornecido na atualização, usa o nickname existente
         val updatedNickname = updatedUserDTO.nickname ?: existingUser.nickname
@@ -68,20 +110,20 @@ class UserService(
 
     fun deleteUser(id: String) {
         // Busca o usuário pelo ID e o deleta do banco de dados
-        val user = getUserById(id)
+        val user = getById(id)
         userRepository.delete(user)
     }
 
     fun getUserQuestions(id: String): List<Question> {
         // Busca o usuário pelo ID e verifica se ele existe
-        val user = getUserById(id)
+        val user = getById(id)
         // Busca todas as perguntas associadas ao usuário
         return questionRepository.findByUserId(user.id!!)
     }
 
     fun addQuestionToUser(userId: String, questionId: String) {
         val user = try {
-            getUserById(userId)
+            getById(userId)
         } catch (e: RuntimeException) {
             throw UserNotFoundException("User not found")
         }
@@ -93,7 +135,7 @@ class UserService(
 
     fun salmorous(userId: String, itemId: String, isQuestion: Boolean): User {
         // Obtém o usuário pelo ID
-        val user = getUserById(userId)
+        val user = getById(userId)
 
         // Seleciona a lista correta com base em isQuestion
         val likedItems = if (isQuestion) {

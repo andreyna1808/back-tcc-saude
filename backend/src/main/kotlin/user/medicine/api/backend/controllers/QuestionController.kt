@@ -17,14 +17,11 @@ class QuestionController(
     }
 
     @GetMapping("")
-    fun getAllQuestions(): List<Question> {
-        return questionService.getAllQuestions()
-    }
+    fun getAllQuestions(): List<Map<String, Any>> = questionService.getAllQuestions()
 
     @GetMapping("/{id}")
-    fun getQuestion(@PathVariable id: String): Question {
-        return questionService.getQuestionById(id)
-    }
+    fun getQuestion(@PathVariable id: String): Map<String, Any> = questionService.getQuestionById(id)
+
 
     @PutMapping("/{id}")
     fun updateQuestion(@PathVariable id: String, @RequestBody updatedQuestion: QuestionUpdateDTO): Question {

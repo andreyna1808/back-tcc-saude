@@ -8,5 +8,4 @@ interface UserRepository : MongoRepository<User, String> {
     fun existsByNickname(nickname: String): Boolean
     fun existsByEmail(email: String): Boolean
     fun findByEmail(email: String): User?
-    fun findUserByEmail(email: String): User
 }

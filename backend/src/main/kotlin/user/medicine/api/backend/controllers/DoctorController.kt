@@ -26,10 +26,7 @@ class DoctorController(
     fun getAllDoctors(): List<Doctor> = doctorService.getAllDoctors()
 
     @GetMapping("/{id}")
-    fun getDoctor(@PathVariable id: String): Doctor = doctorService.getDoctorById(id)
-
-    @GetMapping("/email/{email}")
-    fun getDoctorByEmail(@PathVariable email: String): Doctor = doctorService.getDoctorByEmail(email)
+    fun getDoctor(@PathVariable id: String): Map<String, Any?> = doctorService.getDoctorById(id)
 
     @GetMapping("/{id}/answers")
     fun getDoctorAnswers(@PathVariable id: String): List<Answer> {
@@ -70,7 +67,7 @@ class DoctorController(
 
     @GetMapping("/{id}/image")
     fun getImage(@PathVariable id: String): ResponseEntity<File> {
-        val doctor = doctorService.getDoctorById(id)
+        val doctor = doctorService.getById(id)
         val imageUrl = doctor.profileImageUrl ?: throw RuntimeException("Image not found")
         val file = fileStorageService.getFile(imageUrl.substringAfter("/uploads/"))
         return ResponseEntity.ok(file)

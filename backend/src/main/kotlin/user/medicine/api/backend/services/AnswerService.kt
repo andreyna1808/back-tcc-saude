@@ -1,5 +1,6 @@
 package user.medicine.api.backend.services
 
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import user.medicine.api.backend.dtos.AnswerUpdateDTO
 import user.medicine.api.backend.exceptions.DoctorNotFoundException
@@ -14,7 +15,8 @@ class AnswerService(
     private val answerRepository: AnswerRepository,
     private val questionRepository: QuestionRepository,
     private val doctorRepository: DoctorRepository,
-    private val doctorService: DoctorService,
+    @Lazy private val doctorService: DoctorService,
+    @Lazy private val questionService: QuestionService
 ) {
 
     fun createAnswer(answer: Answer): Answer {
@@ -40,24 +42,78 @@ class AnswerService(
         return saveAnswer
     }
 
-    fun getAllAnswers(): List<Answer> {
-        // Busca a resposta pelo ID. Se não encontrar, lança uma exceção
-        return answerRepository.findAll()
+    fun getAllAnswers(): List<Map<String, Any?>> {
+        val answers = answerRepository.findAll()
+        return answers.map { answer ->
+            val doctor = doctorService.getById(answer.doctorId)
+            val question = questionService.getById(answer.questionId)
+            mapOf(
+                "id" to answer.id,
+                "questionData" to mapOf(
+                    "id" to question.id,
+                    "content" to question.content,
+                    "likes" to question.likes
+                ),
+                "doctorData" to mapOf(
+                    "id" to doctor.id,
+                    "name" to doctor.name,
+                    "crm" to doctor.crm,
+                    "specialty" to doctor.specialty
+                ),
+                "content" to answer.content,
+                "likes" to answer.likes
+            )
+        }
     }
 
-    fun getAnswerById(id: String): Answer {
+    fun getAnswerById(id: String): Map<String, Any?> {
+        val answer = answerRepository.findById(id).orElseThrow { RuntimeException("Answer not found") }
+        val doctor = doctorService.getById(answer.doctorId)
+        val question = questionService.getById(answer.questionId)
+        return mapOf(
+            "id" to answer.id,
+            "questionData" to mapOf(
+                "id" to question.id,
+                "content" to question.content,
+                "likes" to question.likes
+            ),
+            "doctorData" to mapOf(
+                "id" to doctor.id,
+                "name" to doctor.name,
+                "crm" to doctor.crm,
+                "specialty" to doctor.specialty
+            ),
+            "content" to answer.content,
+            "likes" to answer.likes
+        )
+    }
+
+    fun getAnswersByQuestionId(questionId: String): List<Map<String, Any?>> {
+        val answers = answerRepository.findByQuestionId(questionId)
+        return answers.map { answer ->
+            val doctor = doctorService.getById(answer.doctorId)
+            mapOf(
+                "id" to answer.id,
+                "doctorData" to mapOf(
+                    "id" to doctor.id,
+                    "name" to doctor.name,
+                    "crm" to doctor.crm,
+                    "specialty" to doctor.specialty
+                ),
+                "content" to answer.content,
+                "likes" to answer.likes
+            )
+        }
+    }
+
+    fun getById(id: String): Answer {
         // Busca a resposta pelo ID. Se não encontrar, lança uma exceção
         return answerRepository.findById(id).orElseThrow { RuntimeException("Answer not found") }
     }
 
-    fun getAnswersByQuestionId(questionId: String): List<Answer> {
-        // Busca todas as respostas associadas a uma pergunta específica
-        return answerRepository.findByQuestionId(questionId)
-    }
-
     fun updateAnswer(id: String, updatedAnswerDTO: AnswerUpdateDTO): Answer {
         // Busca a resposta existente pelo ID
-        val existingAnswer = getAnswerById(id)
+        val existingAnswer = getById(id)
 
         // Cria uma nova resposta com as informações atualizadas
         val updatedAnswerEntity = existingAnswer.copy(
@@ -71,7 +127,7 @@ class AnswerService(
 
     fun deleteAnswer(id: String) {
         // Busca a resposta pelo ID e a deleta do banco de dados
-        val answer = getAnswerById(id)
+        val answer = getById(id)
         answerRepository.delete(answer)
     }
 }
