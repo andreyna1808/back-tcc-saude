@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
@@ -15,46 +16,47 @@ import java.io.IOException
 
 @Component
 class JwtFilter(
-    private val jwtUtil: JwtUtil, // Utilitário para manipulação do JWT
+    private val jwtUtil: JwtUtil,
     private val authService: AuthService,
-) : OncePerRequestFilter() { // Filtro que será executado uma vez por requisição
+) : OncePerRequestFilter() {
 
     @Throws(IOException::class, ServletException::class)
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, chain: FilterChain) {
-        val authHeader = request.getHeader("Authorization") // Obtém o cabeçalho de autorização da requisição
+        val authHeader = request.getHeader("Authorization")
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            val token = authHeader.substring(7) // Extrai o token removendo o prefixo "Bearer "
-            if (jwtUtil.isTokenExpired(token).not()) { // Verifica se o token não está expirado
-                val email = jwtUtil.extractUsername(token) // Extrai o nome de usuário do token
-                // Tente carregar detalhes do usuário
-                val userDetails: UserDetails? = try {
-                    authService.loadUserByEmail(email) // Carrega os detalhes do usuário pelo username
-                } catch (e: Exception) {
-                    null // Caso o usuário não seja encontrado, retorna null
+            val token = authHeader.substring(7)
+            if (!jwtUtil.isTokenExpired(token)) {
+                val email = jwtUtil.extractUsername(token)
+                println("Entrei no primeiro if $email")
+
+                // Primeiro tenta carregar como usuário
+                var userDetails: UserDetails? = try {
+                    authService.loadUserByEmail(email)
+                } catch (e: UsernameNotFoundException) {
+                    null
                 }
 
-                // Tente carregar detalhes do médico
-                val doctorDetails: UserDetails? = try {
-                    authService.loadUserByEmail(email) // Carrega os detalhes do médico pelo username
-                } catch (e: Exception) {
-                    null // Caso o médico não seja encontrado, retorna null
+                // Se não encontrou como usuário, tenta como médico
+                if (userDetails == null) {
+                    userDetails = try {
+                        authService.loadDoctorByEmail(email)
+                    } catch (e: UsernameNotFoundException) {
+                        null
+                    }
                 }
 
-                // Configure a autenticação se os detalhes do usuário ou do médico foram encontrados
+                println("userDetails $userDetails")
+
                 if (userDetails != null) {
                     val auth = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
+                    println("auth $auth")
                     auth.details = WebAuthenticationDetailsSource().buildDetails(request)
-                    SecurityContextHolder.getContext().authentication =
-                        auth // Define o contexto de segurança com o usuário autenticado
-                } else if (doctorDetails != null) {
-                    val auth = UsernamePasswordAuthenticationToken(doctorDetails, null, doctorDetails.authorities)
-                    auth.details = WebAuthenticationDetailsSource().buildDetails(request)
-                    SecurityContextHolder.getContext().authentication =
-                        auth // Define o contexto de segurança com o médico autenticado
+                    SecurityContextHolder.getContext().authentication = auth
                 }
             }
         }
-        chain.doFilter(request, response) // Passa a requisição e a resposta para o próximo filtro na cadeia
+        chain.doFilter(request, response)
     }
 }
+

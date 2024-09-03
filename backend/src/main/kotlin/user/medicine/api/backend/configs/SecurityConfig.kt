@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 @EnableWebSecurity
@@ -24,7 +26,7 @@ class SecurityConfig(
             csrf.disable() // Desativa CSRF
         }.authorizeHttpRequests { authz ->
             authz.requestMatchers("/api/auth/*/login", "/api/auth/logout", "/api/*/register")
-                .permitAll() // Permite acesso aos endpoints de login
+                .permitAll() // Permite acesso aos endpoints de login e registro
                 .anyRequest().authenticated() // Exige autenticação para outras requisições
         }.sessionManagement { session ->
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Define a política de sessão como stateless
@@ -43,6 +45,19 @@ class SecurityConfig(
     @Bean
     fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
         return authenticationConfiguration.authenticationManager
+    }
+
+    @Bean
+    fun webMvcConfigurer(): WebMvcConfigurer {
+        return object : WebMvcConfigurer {
+            override fun addCorsMappings(registry: CorsRegistry) {
+                registry.addMapping("/**")
+                    .allowedOrigins("http://localhost:3000") // Permite requisições do localhost:3000
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Permite os métodos HTTP especificados
+                    .allowedHeaders("*") // Permite todos os cabeçalhos
+                    .allowCredentials(true) // Permite cookies e credenciais
+            }
+        }
     }
 }
 

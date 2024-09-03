@@ -30,8 +30,14 @@ class AuthController(
             try {
                 val userDetails = authService.loadUserByEmail(email) // Chama o método correto para usuários
                 if (userDetails.password == password) {
-                    val token = jwtUtil.generateToken(email)
-                    return ResponseEntity.ok(mapOf("token" to token))
+                    val tokenData = jwtUtil.generateToken(email)
+                    return ResponseEntity.ok(
+                        mapOf(
+                            "token" to tokenData["token"],
+                            "expiresAt" to tokenData["expiresAt"],
+                            "typeUser" to "user"
+                        )
+                    )
                 }
             } catch (e: Exception) {
                 // Handle user not found
@@ -50,8 +56,14 @@ class AuthController(
             try {
                 val doctorDetails = authService.loadDoctorByEmail(email) // Chama o método correto para médicos
                 if (doctorDetails.password == password) {
-                    val token = jwtUtil.generateToken(email)
-                    return ResponseEntity.ok(mapOf("token" to token))
+                    val tokenData = jwtUtil.generateToken(email)
+                    return ResponseEntity.ok(
+                        mapOf(
+                            "token" to tokenData["token"],
+                            "expiresAt" to tokenData["expiresAt"],
+                            "typeUser" to "user"
+                        )
+                    )
                 }
             } catch (e: Exception) {
                 println("Error: ${e.message}")

@@ -28,6 +28,9 @@ class DoctorController(
     @GetMapping("/{id}")
     fun getDoctor(@PathVariable id: String): Doctor = doctorService.getDoctorById(id)
 
+    @GetMapping("/email/{email}")
+    fun getDoctorByEmail(@PathVariable email: String): Doctor = doctorService.getDoctorByEmail(email)
+
     @GetMapping("/{id}/answers")
     fun getDoctorAnswers(@PathVariable id: String): List<Answer> {
         return doctorService.getDoctorAnswers(id)
