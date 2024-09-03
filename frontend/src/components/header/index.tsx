@@ -20,7 +20,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ user, onLogout, onViewProfile }) => {
   return (
-    <Flex as="header" bg="#003808" color="white" h="50px" alignItems="center">
+    <Flex as="header" bg="#013220" color="white" h="50px" alignItems="center">
       <Text
         fontSize="xl"
         fontWeight="bold"

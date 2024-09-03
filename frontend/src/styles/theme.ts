@@ -1,4 +1,5 @@
 import { extendTheme } from "@chakra-ui/react";
+import { cardTheme } from "./cardTheme";
 
 const theme = extendTheme({
   colors: {
@@ -40,8 +41,8 @@ const theme = extendTheme({
         variant: "solid",
       },
     },
+    Card: cardTheme,
   },
-  
   styles: {
     global: {
       body: {
