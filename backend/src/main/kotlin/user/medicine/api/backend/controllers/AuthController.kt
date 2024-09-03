@@ -3,12 +3,17 @@ package user.medicine.api.backend.controllers
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import user.medicine.api.backend.configs.JwtUtil
+import user.medicine.api.backend.repositories.DoctorRepository
+import user.medicine.api.backend.repositories.UserRepository
 import user.medicine.api.backend.services.AuthService
 
 @RestController
 @RequestMapping("api/auth")
 class AuthController(
-    private val authService: AuthService, private val jwtUtil: JwtUtil
+    private val authService: AuthService,
+    private val jwtUtil: JwtUtil,
+    private val doctorRepository: DoctorRepository,
+    private val userRepository: UserRepository
 ) {
 
     @PostMapping("/logout")
@@ -28,14 +33,15 @@ class AuthController(
 
         if (email != null && password != null) {
             try {
-                val userDetails = authService.loadUserByEmail(email) // Chama o método correto para usuários
+                val userDetails = authService.loadUserByEmail(email)
+
+
                 if (userDetails.password == password) {
-                    val tokenData = jwtUtil.generateToken(email)
+                    val user = userRepository.findByEmail(email) // Obtenha o usuário do banco de dados
+                    val tokenData = jwtUtil.generateToken(email, user!!.id!!) // Passe o ID ao gerar o token
                     return ResponseEntity.ok(
                         mapOf(
-                            "token" to tokenData["token"],
-                            "expiresAt" to tokenData["expiresAt"],
-                            "typeUser" to "user"
+                            "token" to tokenData["token"], "expiresAt" to tokenData["expiresAt"], "typeUser" to "user"
                         )
                     )
                 }
@@ -54,14 +60,13 @@ class AuthController(
 
         if (email != null && password != null) {
             try {
-                val doctorDetails = authService.loadDoctorByEmail(email) // Chama o método correto para médicos
+                val doctorDetails = authService.loadDoctorByEmail(email)
                 if (doctorDetails.password == password) {
-                    val tokenData = jwtUtil.generateToken(email)
+                    val doctor = doctorRepository.findByEmail(email) // Obtenha o médico do banco de dados
+                    val tokenData = jwtUtil.generateToken(email, doctor!!.id!!) // Passe o ID ao gerar o token
                     return ResponseEntity.ok(
                         mapOf(
-                            "token" to tokenData["token"],
-                            "expiresAt" to tokenData["expiresAt"],
-                            "typeUser" to "user"
+                            "token" to tokenData["token"], "expiresAt" to tokenData["expiresAt"], "typeUser" to "doctor"
                         )
                     )
                 }
@@ -72,4 +77,5 @@ class AuthController(
 
         return ResponseEntity.status(401).body("Invalid credentials")
     }
+
 }

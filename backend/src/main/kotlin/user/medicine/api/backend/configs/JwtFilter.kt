@@ -28,8 +28,6 @@ class JwtFilter(
             val token = authHeader.substring(7)
             if (!jwtUtil.isTokenExpired(token)) {
                 val email = jwtUtil.extractUsername(token)
-                println("Entrei no primeiro if $email")
-
                 // Primeiro tenta carregar como usuário
                 var userDetails: UserDetails? = try {
                     authService.loadUserByEmail(email)

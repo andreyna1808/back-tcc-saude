@@ -23,12 +23,17 @@ class JwtUtil {
     }
 
     // Gera um token JWT e retorna um mapa contendo o token e sua data de expiração
-    fun generateToken(username: String): Map<String, Any> {
+    fun generateToken(username: String, id: String): Map<String, Any> {
         val expirationDate = Date(System.currentTimeMillis() + expirationTimeInMs) // Data de expiração calculada com base no tempo atual
 
         // Cria o token JWT usando o nome de usuário, data de emissão, data de expiração e assina com a chave
-        val token = Jwts.builder().setSubject(username).setIssuedAt(Date()).setExpiration(expirationDate)
-            .signWith(getKey(), SignatureAlgorithm.HS256).compact()
+        val token = Jwts.builder()
+            .setSubject(username)
+            .claim("id", id) // Adicionando o ID como claim
+            .setIssuedAt(Date())
+            .setExpiration(expirationDate)
+            .signWith(getKey(), SignatureAlgorithm.HS256)
+            .compact()
 
         // Retorna o token e a data de expiração em um mapa
         return mapOf(
