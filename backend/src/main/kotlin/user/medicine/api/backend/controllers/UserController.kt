@@ -27,21 +27,18 @@ class UserController(
     }
 
     @GetMapping("")
-    fun getAllUser(): List<User> {
+    fun getAllUser(): List<Map<String, Any?>> {
         return userService.getAllUsers()
     }
 
     @GetMapping("/{id}")
-    fun getUser(@PathVariable id: String): User {
+    fun getUser(@PathVariable id: String): Map<String, Any?> {
         return userService.getUserById(id)
     }
 
-    @GetMapping("/email/{email}")
-    fun getUserByEmail(@PathVariable email: String): User = userService.getUserByEmail(email)
-
     @GetMapping("/{id}/questions")
     fun getUserQuestions(@PathVariable id: String): List<Map<String, Any>> {
-        val user = userService.getUserById(id)
+        val user = userService.getById(id)
         val questions = userService.getUserQuestions(id)
 
         return questions.map { question ->
@@ -86,7 +83,7 @@ class UserController(
 
     @GetMapping("/{id}/image")
     fun getImage(@PathVariable id: String): ResponseEntity<File> {
-        val user = userService.getUserById(id)
+        val user = userService.getById(id)
         val imageUrl = user.profileImageUrl ?: throw RuntimeException("Image not found")
         val file = fileStorageService.getFile(imageUrl.substringAfter("/uploads/"))
         return ResponseEntity.ok(file)

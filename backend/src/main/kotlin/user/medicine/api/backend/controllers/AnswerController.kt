@@ -13,13 +13,13 @@ class AnswerController(private val answerService: AnswerService) {
     fun create(@RequestBody answer: Answer): Answer = answerService.createAnswer(answer)
 
     @GetMapping("")
-    fun getAnswer(): List<Answer> = answerService.getAllAnswers()
+    fun getAnswer(): List<Map<String, Any?>> = answerService.getAllAnswers()
 
     @GetMapping("/{id}")
-    fun getAnswer(@PathVariable id: String): Answer = answerService.getAnswerById(id)
+    fun getAnswer(@PathVariable id: String): Map<String, Any?> = answerService.getAnswerById(id)
 
     @GetMapping("/question/{questionId}")
-    fun getAnswersByQuestionId(@PathVariable questionId: String): List<Answer> = answerService.getAnswersByQuestionId(questionId)
+    fun getAnswersByQuestionId(@PathVariable questionId: String): List<Map<String, Any?>> = answerService.getAnswersByQuestionId(questionId)
 
     @PutMapping("/{id}")
     fun updateAnswer(@PathVariable id: String, @RequestBody updatedAnswer: AnswerUpdateDTO): Answer {

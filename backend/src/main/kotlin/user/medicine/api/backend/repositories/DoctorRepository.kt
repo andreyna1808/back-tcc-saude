@@ -8,5 +8,4 @@ interface DoctorRepository : MongoRepository<Doctor, String> {
     fun existsByCrm(crm: String): Boolean
     fun existsByEmail(email: String): Boolean
     fun findByEmail(email: String): Doctor?
-    fun findDoctorByEmail(email: String): Doctor
 }
