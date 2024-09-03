@@ -1,13 +1,14 @@
-import { Box, Button, Flex, Link, VStack } from "@chakra-ui/react";
+import { Box, Button, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useAppContext } from "@/context/AppContext";
 import { GeneralBody } from "@/components/generalBody";
+import { HeaderLink } from "@/components/headerLink";
 
 const Home = () => {
   const router = useRouter();
   const { selected, setSelected } = useAppContext();
 
-  const onSelected = (type: string) => {
+  const onSelected = (type: "doctors" | "users") => {
     setSelected(type);
   };
 
@@ -16,11 +17,11 @@ const Home = () => {
   };
 
   const componentButtons = () => (
-    <VStack justify="center" w="50%">
-      <Button mr={2} w="200px" onClick={() => onRoute("login")}>
+    <VStack justify="center" w="50%" align="center">
+      <Button w="280px" onClick={() => onRoute("login")}>
         Login
       </Button>
-      <Button w="200px" onClick={() => onRoute("register")}>
+      <Button w="280px" onClick={() => onRoute("register")}>
         Cadastrar
       </Button>
     </VStack>
@@ -29,28 +30,7 @@ const Home = () => {
   return (
     <main>
       <Box as="header" color="white" p={4} mb="1%">
-        <Flex w="100%" justify="center" align="center">
-          <Link
-            mr={12}
-            cursor="pointer"
-            userSelect="none"
-            _hover={{ color: "#228B22", textDecoration: "underline" }}
-            _active={{ color: "green" }}
-            onClick={() => onSelected("doctors")}
-          >
-            Sou médico
-          </Link>
-          <Link
-            ml={12}
-            cursor="pointer"
-            userSelect="none"
-            _hover={{ color: "#228B22", textDecoration: "underline" }}
-            _active={{ color: "green" }}
-            onClick={() => onSelected("users")}
-          >
-            Sou consultante
-          </Link>
-        </Flex>
+        <HeaderLink onSelected={onSelected} />
       </Box>
       <GeneralBody selected={selected} renderComponent={componentButtons} />
     </main>
