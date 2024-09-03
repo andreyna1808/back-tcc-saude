@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import user.medicine.api.backend.configs.JwtUtil
 import user.medicine.api.backend.dtos.UserUpdateDTO
+import user.medicine.api.backend.models.Doctor
 import user.medicine.api.backend.models.User
 import user.medicine.api.backend.services.FileStorageService
 import user.medicine.api.backend.services.LikeService
@@ -34,6 +35,9 @@ class UserController(
     fun getUser(@PathVariable id: String): User {
         return userService.getUserById(id)
     }
+
+    @GetMapping("/email/{email}")
+    fun getUserByEmail(@PathVariable email: String): User = userService.getUserByEmail(email)
 
     @GetMapping("/{id}/questions")
     fun getUserQuestions(@PathVariable id: String): List<Map<String, Any>> {

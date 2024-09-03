@@ -1,15 +1,12 @@
 package user.medicine.api.backend.services
 
 import org.springframework.stereotype.Service
-import user.medicine.api.backend.models.User
 import user.medicine.api.backend.repositories.UserRepository
 import user.medicine.api.backend.repositories.QuestionRepository
 import user.medicine.api.backend.dtos.UserUpdateDTO
 import user.medicine.api.backend.exceptions.NicknameAlreadyExistsException
 import user.medicine.api.backend.exceptions.UserNotFoundException
-import user.medicine.api.backend.models.LikedAnswer
-import user.medicine.api.backend.models.LikedQuestion
-import user.medicine.api.backend.models.Question
+import user.medicine.api.backend.models.*
 import user.medicine.api.backend.repositories.AnswerRepository
 
 @Service
@@ -39,6 +36,10 @@ class UserService(
     fun getUserById(id: String): User {
         // Busca o usuário pelo ID. Se não encontrar, lança uma exceção
         return userRepository.findById(id).orElseThrow { RuntimeException("User not found") }
+    }
+
+    fun getUserByEmail(email: String): User {
+        return userRepository.findUserByEmail(email)
     }
 
     fun updateUser(id: String, updatedUserDTO: UserUpdateDTO): User {

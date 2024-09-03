@@ -56,6 +56,11 @@ class DoctorService(
         return doctorRepository.findById(id).orElseThrow { RuntimeException("Doctor not found") }
     }
 
+    fun getDoctorByEmail(email: String): Doctor {
+        // Busca o médico pelo ID. Se não encontrar, lança uma exceção
+        return doctorRepository.findDoctorByEmail(email)
+    }
+
     fun updateDoctor(id: String, updatedDoctorDTO: DoctorUpdateDTO): Doctor {
         // Busca o médico existente pelo ID
         val existingDoctor = getDoctorById(id)
