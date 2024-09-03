@@ -63,7 +63,14 @@ export const GeneralBody: React.FC<GeneralBodyProps> = ({
         </VStack>
       </Flex>
 
-      <HStack spacing={0} mt="5%" w="80%" h="auto" justify="space-around" align="center">
+      <HStack
+        spacing={0}
+        mt="2%"
+        w="80%"
+        h="auto"
+        justify="space-around"
+        align="center"
+      >
         <VStack align="center" w="50%">
           <Heading fontSize={64}>
             {selected === "doctors" ? "Médico" : "Consultante"}

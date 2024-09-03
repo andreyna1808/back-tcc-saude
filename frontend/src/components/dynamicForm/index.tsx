@@ -7,6 +7,7 @@ import {
   FormControl,
   FormLabel,
   HStack,
+  Flex,
 } from "@chakra-ui/react";
 
 interface DynamicFormProps {
@@ -24,80 +25,118 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
   typeConfirm,
   onChangeEvent,
 }) => {
-  const { control, handleSubmit } = useForm();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const renderField = (field: string) => {
+    const isRequired = {
+      required: "Este campo é obrigatório",
+    };
+
     switch (field) {
       case "password":
         return (
-          <FormControl key={field} mb={4}>
+          <FormControl key={field} mb={4} isInvalid={!!errors[field]}>
             <FormLabel>Senha</FormLabel>
             <Controller
               name={field}
               control={control}
+              rules={isRequired}
               defaultValue=""
-              render={({ field }) => <Input type="password" {...field} />}
+              render={({ field }) => (
+                <Input
+                  type="password"
+                  w="300px"
+                  className="chackra-input"
+                  bg="gray.200"
+                  {...field}
+                />
+              )}
             />
+            <p className="error-message">{errors[field]?.message as string}</p>
           </FormControl>
         );
       case "email":
         return (
-          <FormControl key={field} mb={4}>
+          <FormControl key={field} mb={4} isInvalid={!!errors[field]}>
             <FormLabel>Email</FormLabel>
             <Controller
               name={field}
               control={control}
+              rules={isRequired}
               defaultValue=""
-              render={({ field }) => <Input type="email" {...field} />}
+              render={({ field }) => (
+                <Input type="email" w="300px" bg="gray.200" {...field} />
+              )}
             />
+            <p className="error-message">{errors[field]?.message as string}</p>
           </FormControl>
         );
       case "name":
         return (
-          <FormControl key={field} mb={4}>
+          <FormControl key={field} mb={4} isInvalid={!!errors[field]}>
             <FormLabel>Nome</FormLabel>
             <Controller
               name={field}
               control={control}
+              rules={isRequired}
               defaultValue=""
-              render={({ field }) => <Input type="text" {...field} />}
+              render={({ field }) => (
+                <Input type="text" w="300px" bg="gray.200" {...field} />
+              )}
             />
+            <p className="error-message">{errors[field]?.message as string}</p>
           </FormControl>
         );
       case "nickname":
         return (
-          <FormControl key={field} mb={4}>
+          <FormControl key={field} mb={4} isInvalid={!!errors[field]}>
             <FormLabel>Nickname</FormLabel>
             <Controller
               name={field}
               control={control}
+              rules={isRequired}
               defaultValue=""
-              render={({ field }) => <Input type="text" {...field} />}
+              render={({ field }) => (
+                <Input type="text" w="300px" bg="gray.200" {...field} />
+              )}
             />
+            <p className="error-message">{errors[field]?.message as string}</p>
           </FormControl>
         );
       case "crm":
         return (
-          <FormControl key={field} mb={4}>
+          <FormControl key={field} mb={4} isInvalid={!!errors[field]}>
             <FormLabel>CRM</FormLabel>
             <Controller
               name={field}
               control={control}
+              rules={isRequired}
               defaultValue=""
-              render={({ field }) => <Input type="text" {...field} />}
+              render={({ field }) => (
+                <Input type="text" w="300px" bg="gray.200" {...field} />
+              )}
             />
+            <p className="error-message">{errors[field]?.message as string}</p>
           </FormControl>
         );
       case "specialty":
         return (
-          <FormControl key={field} mb={4}>
+          <FormControl key={field} mb={4} isInvalid={!!errors[field]}>
             <FormLabel>Especialidade</FormLabel>
             <Controller
               name={field}
               control={control}
+              rules={isRequired}
               defaultValue=""
-              render={({ field }) => <Input type="text" {...field} />}
+              render={({ field }) => (
+                <Input type="text" w="300px" bg="gray.200" {...field} />
+              )}
             />
+            <p className="error-message">{errors[field]?.message as string}</p>
           </FormControl>
         );
       default:
@@ -106,18 +145,38 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
   };
 
   return (
-    <Box p={4} borderWidth={1} borderRadius="md">
+    <Flex p={4} w="100%">
       <form onSubmit={handleSubmit(onSubmit)}>
-        {fields.map(renderField)}
-        <HStack>
-          <Button type="submit" colorScheme="teal" mt={4} px={4}>
+        <HStack flexWrap="wrap">
+          {fields.map((field, index) => (
+            <Box key={index} flex="1 0 auto" minW="300px">
+              {renderField(field)}
+            </Box>
+          ))}
+          <Button
+            type="submit"
+            bg="#228B22"
+            _hover={{ bg: "green" }}
+            color="white"
+            mt={4}
+            px={4}
+            w="20%"
+          >
             {typeConfirm}
           </Button>
-          <Button colorScheme="teal" bg="gray" _hover={{bg: "#a0a0a0"}} mt={4} px={4} onClick={onChangeEvent}>
+          <Button
+            w="25%"
+            bg="#a0a0a0"
+            color="black"
+            _hover={{ bg: "gray" }}
+            mt={4}
+            px={4}
+            onClick={onChangeEvent}
+          >
             {typeChange}
           </Button>
         </HStack>
       </form>
-    </Box>
+    </Flex>
   );
 };

@@ -37,4 +37,11 @@ input {
     border-radius: 5px;
     padding-left: 4px;
     outline: none;
+    color: black;
+}
+
+.error-message {
+    font-size: 12px;
+    margin-left: 2px;
+    color: #ff3a3a;
 }
