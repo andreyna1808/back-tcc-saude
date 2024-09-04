@@ -2,9 +2,13 @@ import { BearerToken } from "@/utils/bearerToken";
 import { basicUrl } from "@/utils/urls";
 import axios from "axios";
 
-export const getQuestions = async (token: string) => {
+export const getAnswersQuestionById = async (
+  type: string,
+  id: string,
+  token: string
+) => {
   try {
-    const res = await axios.get(`${basicUrl}/questions`, BearerToken(token));
+    const res = await axios.get(`${basicUrl}/${type}/${id}`, BearerToken(token));
 
     return res.data;
   } catch (error) {

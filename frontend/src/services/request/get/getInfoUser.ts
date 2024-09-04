@@ -1,3 +1,4 @@
+import { BearerToken } from "@/utils/bearerToken";
 import { basicUrl } from "@/utils/urls";
 import axios from "axios";
 
@@ -7,11 +8,10 @@ export const getInfoUser = async (
   token: string
 ) => {
   try {
-    const res = await axios.get(`${basicUrl}/${selected}/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const res = await axios.get(
+      `${basicUrl}/${selected}/${id}`,
+      BearerToken(token)
+    );
 
     return res.data;
   } catch (error) {
