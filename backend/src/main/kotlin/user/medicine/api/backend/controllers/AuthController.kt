@@ -41,7 +41,7 @@ class AuthController(
                     val tokenData = jwtUtil.generateToken(email, user!!.id!!) // Passe o ID ao gerar o token
                     return ResponseEntity.ok(
                         mapOf(
-                            "token" to tokenData["token"], "expiresAt" to tokenData["expiresAt"], "typeUser" to "user"
+                            "token" to tokenData["token"], "expiresAt" to tokenData["expiresAt"], "typeUser" to "users"
                         )
                     )
                 }
@@ -66,7 +66,7 @@ class AuthController(
                     val tokenData = jwtUtil.generateToken(email, doctor!!.id!!) // Passe o ID ao gerar o token
                     return ResponseEntity.ok(
                         mapOf(
-                            "token" to tokenData["token"], "expiresAt" to tokenData["expiresAt"], "typeUser" to "doctor"
+                            "token" to tokenData["token"], "expiresAt" to tokenData["expiresAt"], "typeUser" to "doctors"
                         )
                     )
                 }

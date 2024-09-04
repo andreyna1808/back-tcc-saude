@@ -13,45 +13,21 @@ import { useAppContext } from "@/context/AppContext";
 import { FaArrowLeft } from "react-icons/fa";
 import { useRouter } from "next/router";
 import { HeaderLink } from "@/components/headerLink";
-import axios from "axios";
-import { basicUrl } from "@/utils/urls";
-import { showToast } from "@/components/toast";
-import { useAuth } from "@/context/AuthContext";
+import { postRegister } from "@/services/request/post/postRegister";
+import useAuthRedirect from "@/hooks/Auth/useAuthRedirect";
 
 const Register = () => {
+  useAuthRedirect();
   const toast = useToast();
   const router = useRouter();
   const { selected, setSelected } = useAppContext();
-  const { token } = useAuth();
-
-  if (token) {
-    return router.push("/feed");
-  }
 
   const onSelected = (type: "doctors" | "users") => {
     setSelected(type);
   };
 
   const handleFormSubmit = async (data: Record<string, any>) => {
-    try {
-      await axios.post(`${basicUrl}/${selected}/register`, data);
-      showToast(toast, {
-        type: "success",
-        title: "Success",
-        description: "Registrado com sucesso",
-      });
-      router.push(`/auth/login`);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        showToast(toast, {
-          type: "error",
-          title: "Error",
-          description: error.response?.data || "An error occurred.",
-        });
-      } else {
-        console.error("Unexpected error: ", error);
-      }
-    }
+    await postRegister(data, selected, toast, router);
   };
 
   const currentField =

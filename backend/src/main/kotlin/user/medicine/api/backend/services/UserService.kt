@@ -5,8 +5,7 @@ import org.springframework.stereotype.Service
 import user.medicine.api.backend.repositories.UserRepository
 import user.medicine.api.backend.repositories.QuestionRepository
 import user.medicine.api.backend.dtos.UserUpdateDTO
-import user.medicine.api.backend.exceptions.NicknameAlreadyExistsException
-import user.medicine.api.backend.exceptions.UserNotFoundException
+import user.medicine.api.backend.exceptions.*
 import user.medicine.api.backend.models.*
 import user.medicine.api.backend.repositories.AnswerRepository
 
@@ -35,13 +34,27 @@ class UserService(
         val users = userRepository.findAll()
         return users.map { user ->
             // Buscar as perguntas associadas ao usuário
-            val questions = user.questions.map { questionId ->
-                val question = questionService.getById(questionId)
-                val answers = answerService.getAnswersByQuestionId(question.id!!)
-                mapOf(
-                    "id" to question.id, "content" to question.content, "likes" to question.likes, "answers" to answers
-                )
+            val questions = user.questions.mapNotNull { questionId ->
+                try {
+                    val question = questionService.getById(questionId)
+                    // Buscar respostas apenas se a pergunta existir
+                    val answers = try {
+                        answerService.getAnswersByQuestionId(question.id!!)
+                    } catch (e: AnswerNotFoundException) {
+                        emptyList() // Retorne uma lista vazia se não encontrar respostas
+                    }
+
+                    mapOf(
+                        "id" to question.id,
+                        "content" to question.content,
+                        "likes" to question.likes,
+                        "answers" to answers
+                    )
+                } catch (e: QuestionNotFoundException) {
+                    null // Caso não encontre a pergunta, retorne null
+                }
             }
+
             mapOf(
                 "id" to user.id,
                 "name" to user.name,
@@ -56,16 +69,32 @@ class UserService(
         }
     }
 
+
     fun getUserById(id: String): Map<String, Any?> {
         val user = userRepository.findById(id).orElseThrow { RuntimeException("User not found") }
+
         // Buscar as perguntas associadas ao usuário
-        val questions = user.questions.map { questionId ->
-            val question = questionService.getById(questionId)
-            val answers = answerService.getAnswersByQuestionId(question.id!!)
-            mapOf(
-                "id" to question.id, "content" to question.content, "likes" to question.likes, "answers" to answers
-            )
+        val questions = user.questions.mapNotNull { questionId ->
+            try {
+                val question = questionService.getById(questionId)
+                // Buscar respostas apenas se a pergunta existir
+                val answers = try {
+                    answerService.getAnswersByQuestionId(question.id!!)
+                } catch (e: AnswerNotFoundException) {
+                    emptyList() // Retorne uma lista vazia se não encontrar respostas
+                }
+
+                mapOf(
+                    "id" to question.id,
+                    "content" to question.content,
+                    "likes" to question.likes,
+                    "answers" to answers
+                )
+            } catch (e: QuestionNotFoundException) {
+                null // Caso não encontre a pergunta, retorne null
+            }
         }
+
         return mapOf(
             "id" to user.id,
             "name" to user.name,

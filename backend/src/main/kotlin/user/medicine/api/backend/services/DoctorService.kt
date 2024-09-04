@@ -5,9 +5,7 @@ import org.springframework.stereotype.Service
 import user.medicine.api.backend.models.Doctor
 import user.medicine.api.backend.repositories.DoctorRepository
 import user.medicine.api.backend.dtos.DoctorUpdateDTO
-import user.medicine.api.backend.exceptions.CrmAlreadyExistsException
-import user.medicine.api.backend.exceptions.NicknameAlreadyExistsException
-import user.medicine.api.backend.exceptions.UserNotFoundException
+import user.medicine.api.backend.exceptions.*
 import user.medicine.api.backend.models.Answer
 import user.medicine.api.backend.repositories.AnswerRepository
 
@@ -55,20 +53,32 @@ class DoctorService(
 
     fun getDoctorById(id: String): Map<String, Any?> {
         val doctor = doctorRepository.findById(id).orElseThrow { RuntimeException("Doctor not found") }
+
         // Buscar as respostas associadas ao médico
-        val answers = doctor.answers.map { it ->
-            val answer = answerService.getById(it)
-            val question = questionService.getById(answer.questionId)
-            mapOf(
-                "id" to answer.id,
-                "questionData" to mapOf(
-                    "id" to question.id,
-                    "content" to question.content
-                ),
-                "content" to answer.content,
-                "likes" to answer.likes
-            )
+        val answers = doctor.answers.mapNotNull { answerId ->
+            try {
+                val answer = answerService.getById(answerId)
+                val question = try {
+                    questionService.getById(answer.questionId)
+                } catch (e: QuestionNotFoundException) {
+                    null // Caso não encontre a pergunta, retorne null
+                }
+                question?.let {
+                    mapOf(
+                        "id" to answer.id,
+                        "questionData" to mapOf(
+                            "id" to question.id,
+                            "content" to question.content
+                        ),
+                        "content" to answer.content,
+                        "likes" to answer.likes
+                    )
+                }
+            } catch (e: AnswerNotFoundException) {
+                null // Caso não encontre a resposta, retorne null
+            }
         }
+
         return mapOf(
             "id" to doctor.id,
             "name" to doctor.name,

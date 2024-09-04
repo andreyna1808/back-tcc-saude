@@ -3,6 +3,7 @@ package user.medicine.api.backend.services
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 import user.medicine.api.backend.dtos.QuestionUpdateDTO
+import user.medicine.api.backend.exceptions.QuestionNotFoundException
 import user.medicine.api.backend.models.Question
 import user.medicine.api.backend.repositories.QuestionRepository
 
@@ -64,7 +65,7 @@ class QuestionService(
 
     fun getById(id: String): Question {
         // Busca a pergunta pelo ID. Se não encontrar, lança uma exceção
-        return questionRepository.findById(id).orElseThrow { RuntimeException("Question not found") }
+        return questionRepository.findById(id).orElseThrow { QuestionNotFoundException(id) }
     }
 
     fun updateQuestion(id: String, updatedQuestionDTO: QuestionUpdateDTO): Question {
