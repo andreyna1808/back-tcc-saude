@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, VStack, Spinner } from "@chakra-ui/react";
 
-export const GeneralBody: React.FC = () => {
+export const Loading: React.FC = () => {
   return (
     <main>
       <VStack w="100%" h="95vh" justify="center" align="center">

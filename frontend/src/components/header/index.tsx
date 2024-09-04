@@ -9,11 +9,11 @@ import {
   MenuList,
   Center,
 } from "@chakra-ui/react";
-import { FaUserCircle } from "react-icons/fa"; // Ícone para fallback
+import { FaUserCircle } from "react-icons/fa"; 
 
 interface HeaderProps {
   user: any;
-  type: "doctors" | "users";
+  type: string;
   onLogout?: () => void;
   onViewProfile?: () => void;
 }

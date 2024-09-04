@@ -6,7 +6,7 @@ import {
   HStack,
   Text,
   VStack,
-  Center
+  Center,
 } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { AiOutlineLike, AiOutlineComment } from "react-icons/ai";
@@ -163,7 +163,15 @@ export const CardComponent: FC<CardComponentProps> = ({
     <VStack maxH="80vh" mt={4}>
       <Text fontSize={24}>{title}</Text>
       <VStack pb={2} overflow="auto">
-        {typeData()}
+        {data.length ? (
+          typeData()
+        ) : (
+          <Card width="600px">
+            <CardBody display="flex" justifyContent="center">
+              <Text>Nenhuma pergunta encontrada!</Text>
+            </CardBody>
+          </Card>
+        )}
       </VStack>
     </VStack>
   );

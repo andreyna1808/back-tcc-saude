@@ -32,6 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = (newToken: string, expiresAt: number, typeUser: string) => {
     setToken(newToken);
     setExpiresAt(expiresAt);
+    setTypeUser(typeUser);
     if (typeof window !== "undefined") {
       localStorage.setItem("authToken", newToken);
       localStorage.setItem("typeUser", typeUser);
@@ -42,6 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = () => {
     setToken(null);
     setExpiresAt(null);
+    setTypeUser(null);
     if (typeof window !== "undefined") {
       localStorage.removeItem("authToken");
       localStorage.removeItem("authExpiresAt");
