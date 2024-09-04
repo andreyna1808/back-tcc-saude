@@ -17,7 +17,8 @@ class AnswerService(
     private val questionRepository: QuestionRepository,
     private val doctorRepository: DoctorRepository,
     @Lazy private val doctorService: DoctorService,
-    @Lazy private val questionService: QuestionService
+    @Lazy private val questionService: QuestionService,
+    @Lazy private val userService: UserService
 ) {
 
     fun createAnswer(answer: Answer): Answer {
@@ -71,12 +72,17 @@ class AnswerService(
         val answer = answerRepository.findById(id).orElseThrow { RuntimeException("Answer not found") }
         val doctor = doctorService.getById(answer.doctorId)
         val question = questionService.getById(answer.questionId)
+        val user = userService.getById(question.userId)
         return mapOf(
             "id" to answer.id,
             "questionData" to mapOf(
                 "id" to question.id,
                 "content" to question.content,
                 "likes" to question.likes
+            ),
+            "userData" to mapOf(
+                "id" to user.id,
+                "nickname" to user.nickname,
             ),
             "doctorData" to mapOf(
                 "id" to doctor.id,
