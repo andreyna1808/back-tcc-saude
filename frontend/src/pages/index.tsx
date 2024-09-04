@@ -3,13 +3,12 @@ import { useRouter } from "next/router";
 import { useAppContext } from "@/context/AppContext";
 import { GeneralBody } from "@/components/generalBody";
 import { HeaderLink } from "@/components/headerLink";
-import { useAuth } from "@/context/AuthContext";
-import { useEffect } from "react";
+import useAuthRedirect from "@/hooks/Auth/useAuthRedirect";
 
 const Home = () => {
+  useAuthRedirect();
   const router = useRouter();
   const { selected, setSelected } = useAppContext();
-  const { token } = useAuth();
 
   const onSelected = (type: "doctors" | "users") => {
     setSelected(type);
@@ -18,18 +17,6 @@ const Home = () => {
   const onRoute = (route: string) => {
     router.push(`auth/${route}`);
   };
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      console.log("token: ", token)
-      if (!token) {
-        router.push("/");
-      } else {
-        router.push("/feed");
-      }
-
-    }
-  }, []);
 
   const componentButtons = () => (
     <VStack justify="center" w="50%" align="center">
