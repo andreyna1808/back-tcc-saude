@@ -11,8 +11,10 @@ class NicknameAlreadyExistsException(message: String) : RuntimeException(message
 class CrmAlreadyExistsException(message: String) : RuntimeException(message)
 class InvalidCrmException(message: String) : RuntimeException(message)
 class UserNotFoundException(message: String) : RuntimeException(message)
-class QuestionNotFoundException(message: String) : RuntimeException(message)
 class DoctorNotFoundException(message: String) : RuntimeException(message)
+class QuestionNotFoundException(id: String) : RuntimeException("Question with ID $id not found")
+class AnswerNotFoundException(id: String) : RuntimeException("Answer with ID $id not found")
+
 
 @ControllerAdvice
 class GlobalExceptionHandler {
