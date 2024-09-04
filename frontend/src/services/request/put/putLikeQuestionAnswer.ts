@@ -1,3 +1,4 @@
+import { BearerToken } from "@/utils/bearerToken";
 import { basicUrl } from "@/utils/urls";
 import axios from "axios";
 
@@ -12,11 +13,7 @@ export const putLikeQuestionAnswer = async (
     const res = await axios.put(
       `${basicUrl}/${selected}/${userID}/like?itemId=${itemId}&isQuestion=${isQuestion}`,
       {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      BearerToken(token)
     );
 
     return res.data;
