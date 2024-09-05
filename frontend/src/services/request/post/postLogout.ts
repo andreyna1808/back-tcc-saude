@@ -1,21 +1,22 @@
 import { showToast } from "@/components/toast";
+import { BearerToken } from "@/utils/bearerToken";
 import { basicUrl } from "@/utils/urls";
 import axios from "axios";
 
-export const postRegister = async (
-  data: Record<string, any>,
-  selected: string,
-  toast: any,
-  router: any
-) => {
+export const postLogout = async (token: string, toast: any, login: any) => {
   try {
-    await axios.post(`${basicUrl}/${selected}/register`, data);
+    const res = await axios.post(
+      `${basicUrl}/auth/logout`,
+      {},
+      BearerToken(token)
+    );
     showToast(toast, {
       type: "success",
       title: "Successo",
-      description: "Registrado com sucesso",
+      description: "Até mais tarde!",
     });
-    router.push(`/auth/login`);
+
+    await login(null, null, null);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       showToast(toast, {

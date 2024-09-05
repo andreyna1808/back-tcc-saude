@@ -3,22 +3,27 @@ import { BearerToken } from "@/utils/bearerToken";
 import { basicUrl } from "@/utils/urls";
 import axios from "axios";
 
-export const postQuestionAnswer = async (
-  data: Record<string, any>,
-  type: string,
+export const putQuestionAnswerComment = async (
+  selected: "answers" | "questions",
+  id: string,
+  data: {
+    content: string;
+    anonymous?: boolean;
+  },
   toast: any,
   token: string
 ) => {
   try {
-    const res = await axios.post(
-      `${basicUrl}/${type}/create`,
+    const res = await axios.put(
+      `${basicUrl}/${selected}/${id}`,
       data,
       BearerToken(token)
     );
+
     showToast(toast, {
       type: "success",
       title: "Successo",
-      description: "Requisição criada com sucesso",
+      description: "Atualizado com sucesso",
     });
 
     return res.data;
