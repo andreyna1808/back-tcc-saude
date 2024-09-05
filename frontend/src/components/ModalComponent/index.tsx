@@ -2,6 +2,7 @@ import { Modal, ModalOverlay } from "@chakra-ui/react";
 import { FC, useRef, useState } from "react";
 import { QuestionSwitch } from "./switch/questions";
 import { AnswerSwitch } from "./switch/answers";
+import { CreateQuestion } from "./switch/createQuestion";
 
 interface ModalComponentProps {
   isOpen: boolean;
@@ -11,10 +12,11 @@ interface ModalComponentProps {
     type: string;
   };
   typeUser: string;
-  setViewDataModal: any;
-  onLikeOrDeslike: (data: any, type?: string) => void;
+  setViewDataModal?: any;
+  onLikeOrDeslike?: (data: any, type?: string) => void;
   onPublishComment?: (dataQuestion: any, answer: string) => void;
   onEditComment?: (dataQuestion: any, answer: string, type: string) => void;
+  onCreateQuestion?: (content: string, anonymous: boolean) => void;
 }
 
 export const ModalComponent: FC<ModalComponentProps> = ({
@@ -23,6 +25,7 @@ export const ModalComponent: FC<ModalComponentProps> = ({
   setIsOpen,
   onEditComment,
   viewDataModal,
+  onCreateQuestion,
   onPublishComment,
   onLikeOrDeslike,
   setViewDataModal,
@@ -41,7 +44,7 @@ export const ModalComponent: FC<ModalComponentProps> = ({
         return (
           <AnswerSwitch
             data={data}
-            onLikeOrDeslike={onLikeOrDeslike}
+            onLikeOrDeslike={onLikeOrDeslike!}
             onEditComment={onEditComment}
           />
         );
@@ -51,10 +54,11 @@ export const ModalComponent: FC<ModalComponentProps> = ({
             data={data}
             typeUser={typeUser}
             onPublishComment={onPublishComment}
-            onLikeOrDeslike={onLikeOrDeslike}
+            onLikeOrDeslike={onLikeOrDeslike!}
           />
         );
-
+      case "createQuestion":
+        return <CreateQuestion onCreateQuestion={onCreateQuestion} onClose={onClose} />;
       default:
         return <></>;
     }

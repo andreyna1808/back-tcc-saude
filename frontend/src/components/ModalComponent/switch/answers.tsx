@@ -44,7 +44,7 @@ export const AnswerSwitch: FC<AnswerSwitchProps> = ({
     <ModalContent bg="#343A40" maxH="80vh" w="100%">
       <ModalHeader>
         <HStack h="3vh" w="100%" ml={2}>
-          <Text>{data?.anonymous ? "Anônimo" : data?.userData.nickname}</Text>
+          <Text>{data?.anonymous ? "Anônimo" : data?.userData?.nickname}</Text>
         </HStack>
       </ModalHeader>
       <ModalCloseButton />

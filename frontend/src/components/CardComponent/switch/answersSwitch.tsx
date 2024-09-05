@@ -35,10 +35,9 @@ export const AnswersSwitch: FC<AnswersSwitchProps> = ({
         flexDirection="column"
         justifyContent="space-between"
       >
-        <HStack h="30px" w="100%" justify="space-between" ml={2}>
-          <Text>{`Nome: ${item?.doctorData?.name}`}</Text>
-          <Text>{`CRM: ${item?.doctorData.crm}`}</Text>
-          <Text>{`Especialidade: ${item?.doctorData.specialty}`}</Text>
+        <HStack h="30px" w="95%" justify="space-between" ml={2}>
+          <Text>{`Nickname: ${item?.userData?.nickname}`}</Text>
+          <Text>{`Anônimo: ${item?.anonymous ? "Sim" : "Não"}`}</Text>
         </HStack>
         <Center
           justifyContent="space-between"
@@ -48,7 +47,7 @@ export const AnswersSwitch: FC<AnswersSwitchProps> = ({
           cursor="pointer"
           borderRadius="8px"
           _hover={{ bg: "#343A40" }}
-          onClick={() => onViewData(item, "answers")}
+          onClick={() => onViewData(item, "questions")}
         >
           <Text
             w="440px"
@@ -84,12 +83,12 @@ export const AnswersSwitch: FC<AnswersSwitchProps> = ({
             IconType={AiOutlineLike}
             textValue={item?.likes || 0}
           />
-          {/* <LikeCommentRemove
+          <LikeCommentRemove
             colorHover="#ff3a3a"
-            onClick={() => onViewData(item, "questions")}
+            onClick={() => onRemove(item, "questions")}
             IconType={MdDeleteOutline}
             textValue={"Remover"}
-          /> */}
+          />
         </HStack>
       </CardBody>
     </Card>

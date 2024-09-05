@@ -60,7 +60,8 @@ const Feed = () => {
   };
 
   const onLikeOrDeslike = async (data: any, type?: string) => {
-    const isQuestion = typeof data.anonymous == "boolean" || type == "questions";
+    const isQuestion =
+      typeof data.anonymous == "boolean" || type == "questions";
     await putLikeQuestionAnswer(
       typeUser!,
       userData.id,
@@ -131,6 +132,18 @@ const Feed = () => {
     });
   };
 
+  const onCreateQuestion = async (content: string, anonymous: boolean) => {
+    const updateData = {
+      userId: userData.id,
+      anonymous: anonymous,
+      content: content,
+    };
+    await postQuestionAnswer(updateData, "questions", toast, token!);
+    setUpdateData((prev) => {
+      return !prev;
+    });
+  };
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       setSsr(false);
@@ -184,6 +197,8 @@ const Feed = () => {
           onLike={onLikeOrDeslike}
           onViewData={onViewData}
           onRemove={onRemove}
+          typeUser={typeUser}
+          onCreateQuestion={onCreateQuestion}
         />
       </HStack>
     </main>
