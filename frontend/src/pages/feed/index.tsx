@@ -1,16 +1,24 @@
-import { mockAnswers } from "@/assets/mocks/mockAnswers ";
 import { CardComponent } from "@/components/CardComponent";
 import Header from "@/components/header";
 import { Loading } from "@/components/loading";
 import { ModalComponent } from "@/components/ModalComponent";
 import { useAuth } from "@/context/AuthContext";
 import useAuthRedirect from "@/hooks/Auth/useAuthRedirect";
+import { deleteQuestionAnswer } from "@/services/request/delete/deleteQuestionAnswer";
 import { getAnswersQuestionById } from "@/services/request/get/getAnswersQuestionById";
 import { getInfoUser } from "@/services/request/get/getInfoUser";
 import { getQuestions } from "@/services/request/get/getQuestions";
 import { postQuestionAnswer } from "@/services/request/post/postQuestionAnswer";
 import { putLikeQuestionAnswer } from "@/services/request/put/putLikeQuestionAnswer";
+import { putQuestionAnswerComment } from "@/services/request/put/putQuestionAnswerComment";
 import { decodeToken } from "@/utils/decodeToken";
+import {
+  getFilteredQuestions,
+  getNotFound,
+  getTitle,
+  getUserAnsweredQuestions,
+  updateDataWithQuestionResp,
+} from "@/utils/feedUtils";
 import { HStack, useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -42,23 +50,28 @@ const Feed = () => {
     setQuestions(questionResp);
 
     if (viewDataModal?.data?.id) {
-      const updateModal = questionResp?.find(
-        (question: any) => question.id == viewDataModal?.data?.id
-      );
+      const updateModal =
+        questionResp?.find(
+          (question: any) => question.id == viewDataModal?.data?.id
+        ) || updateDataWithQuestionResp(viewDataModal.data, questionResp);
+
       setViewDataModal({ ...viewDataModal, data: updateModal });
     }
   };
 
-  const onLikeOrDeslike = async (data: any) => {
-    const isQuestion = typeof data.anonymous == "boolean";
+  const onLikeOrDeslike = async (data: any, type?: string) => {
+    const isQuestion = typeof data.anonymous == "boolean" || type == "questions";
     await putLikeQuestionAnswer(
       typeUser!,
       userData.id,
       data.id,
       token!,
-      isQuestion
+      isQuestion,
+      toast
     );
-    setUpdateData(!updateData);
+    setUpdateData((prev) => {
+      return !prev;
+    });
   };
 
   const onViewData = async (data: any, type: string) => {
@@ -67,7 +80,7 @@ const Feed = () => {
     setIsOpen(true);
   };
 
-  const onPublishComent = async (dataQuestion: any, content: string) => {
+  const onPublishComment = async (dataQuestion: any, content: string) => {
     const updateData = {
       questionId: dataQuestion.id,
       doctorId: userData.id,
@@ -79,7 +92,44 @@ const Feed = () => {
     });
   };
 
-  console.log("userData", { userData, questions, typeUser, token });
+  const onEditComment = async (
+    dataQuestion: any,
+    content: string,
+    type: string
+  ) => {
+    if (type == "questions") {
+      const updateData = { content, type };
+      await putQuestionAnswerComment(
+        "questions",
+        dataQuestion.id,
+        updateData,
+        toast,
+        token!
+      );
+    } else {
+      const updateData = {
+        content,
+      };
+      await putQuestionAnswerComment(
+        "answers",
+        dataQuestion.id,
+        updateData,
+        toast,
+        token!
+      );
+    }
+
+    setUpdateData((prev) => {
+      return !prev;
+    });
+  };
+
+  const onRemove = async (data: any, type: string) => {
+    await deleteQuestionAnswer(type, data.id, token!, toast);
+    setUpdateData((prev) => {
+      return !prev;
+    });
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -93,30 +143,13 @@ const Feed = () => {
     if (!!tokenData && typeUser) {
       infoUser(typeUser!, tokenData.id, token);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, ssr, typeUser, router, updateData]);
 
   if (ssr || !token || !typeUser) {
     return <Loading />;
   }
-
-  const getTitle = (typeUser: string, isAnswers: boolean) => {
-    if (typeUser === "doctors") {
-      return isAnswers
-        ? "Perguntas que você respondeu"
-        : "Perguntas dos usuários";
-    }
-    return isAnswers ? "Suas perguntas" : "Perguntas dos outros usuários";
-  };
-
-  const getNotFound = (isAnswers: boolean) => {
-    return typeUser === "doctors"
-      ? isAnswers
-        ? "Nenhuma resposta encontrada!"
-        : "Nenhuma pergunta dos usuários foi encontrada"
-      : isAnswers
-      ? "Você não fez nenhuma pergunta"
-      : "Nenhuma pergunta dos usuários foi encontrada";
-  };
 
   return (
     <main>
@@ -126,7 +159,8 @@ const Feed = () => {
         typeUser={typeUser}
         setIsOpen={setIsOpen}
         viewDataModal={viewDataModal}
-        onPublishComent={onPublishComent}
+        onEditComment={onEditComment}
+        onPublishComment={onPublishComment}
         onLikeOrDeslike={onLikeOrDeslike}
         setViewDataModal={setViewDataModal}
       />
@@ -134,37 +168,22 @@ const Feed = () => {
       <HStack w="100%" justify="space-around" alignItems="start">
         <CardComponent
           title={getTitle(typeUser, false)}
-          data={
-            typeUser === "doctors"
-              ? questions
-              : questions?.filter(
-                  (question: any) =>
-                    !userData?.questions?.some(
-                      (dataQuestion: any) => dataQuestion.id === question.id
-                    )
-                )
-          }
+          data={getFilteredQuestions(questions, userData, typeUser)}
           type="questions"
-          notfound={getNotFound(false)}
+          notfound={getNotFound(typeUser, false)}
           onLike={onLikeOrDeslike}
           onViewData={onViewData}
+          onRemove={onRemove}
         />
 
         <CardComponent
           title={getTitle(typeUser, true)}
-          data={
-            typeUser === "doctors"
-              ? userData
-              : questions?.filter((question: any) =>
-                  userData?.questions?.some(
-                    (dataQuestion: any) => dataQuestion.id === question.id
-                  )
-                )
-          }
-          type="answersByDoctor"
-          notfound={getNotFound(true)}
+          data={getUserAnsweredQuestions(questions, userData, typeUser)}
+          type={typeUser === "doctors" ? "answersByDoctor" : "answers"}
+          notfound={getNotFound(typeUser, true)}
           onLike={onLikeOrDeslike}
           onViewData={onViewData}
+          onRemove={onRemove}
         />
       </HStack>
     </main>

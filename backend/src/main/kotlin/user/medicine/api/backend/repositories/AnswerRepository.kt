@@ -8,4 +8,5 @@ interface AnswerRepository : MongoRepository<Answer, String> {
     // Define um método para encontrar respostas por questionId
     fun findByQuestionId(questionId: String): List<Answer>
     fun findByDoctorId(doctorId: String): List<Answer>
+    fun findAllByQuestionId(questionId: String): List<Answer>
 }

@@ -5,11 +5,13 @@ import org.springframework.stereotype.Service
 import user.medicine.api.backend.dtos.QuestionUpdateDTO
 import user.medicine.api.backend.exceptions.QuestionNotFoundException
 import user.medicine.api.backend.models.Question
+import user.medicine.api.backend.repositories.AnswerRepository
 import user.medicine.api.backend.repositories.QuestionRepository
 
 @Service
 class QuestionService(
     private val questionRepository: QuestionRepository,
+    private val answerRepository: AnswerRepository,
     @Lazy private val userService: UserService, // Adicione o UserService para atualizar o usuário
     @Lazy private val answerService: AnswerService
 ) {
@@ -84,8 +86,17 @@ class QuestionService(
     }
 
     fun deleteQuestion(id: String) {
-        // Busca a pergunta pelo ID e a deleta do banco de dados
+        // Busca a pergunta pelo ID
         val question = getById(id)
+
+        // Deleta todas as respostas relacionadas à pergunta
+        val answers = answerRepository.findAllByQuestionId(id)
+        for (answer in answers) {
+            answerRepository.delete(answer)
+        }
+
+        // Agora deleta a própria pergunta
         questionRepository.delete(question)
     }
+
 }

@@ -1,3 +1,4 @@
+import { showToast } from "@/components/toast";
 import { BearerToken } from "@/utils/bearerToken";
 import { basicUrl } from "@/utils/urls";
 import axios from "axios";
@@ -7,7 +8,8 @@ export const putLikeQuestionAnswer = async (
   userID: string,
   itemId: string,
   token: string,
-  isQuestion: boolean
+  isQuestion: boolean,
+  toast: any
 ) => {
   try {
     const res = await axios.put(
@@ -16,8 +18,24 @@ export const putLikeQuestionAnswer = async (
       BearerToken(token)
     );
 
+    showToast(toast, {
+      type: "success",
+      title: "Successo",
+      description: "Atualizado com sucesso",
+    });
+
     return res.data;
   } catch (error) {
-    console.error("Erro:", error);
+    if (axios.isAxiosError(error)) {
+      showToast(toast, {
+        type: "error",
+        title: "Erro",
+        description:
+          error.response?.data ||
+          "Ocorreu um erro, tente novamente mais tarde!.",
+      });
+    } else {
+      console.error("Unexpected error: ", error);
+    }
   }
 };

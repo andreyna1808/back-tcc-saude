@@ -12,7 +12,7 @@ export const postLogin = async (
     const res = await axios.post(`${basicUrl}/auth/${selected}/login`, data);
     showToast(toast, {
       type: "success",
-      title: "Success",
+      title: "Successo",
       description: "Usuário logado com sucesso",
     });
 
@@ -21,7 +21,7 @@ export const postLogin = async (
     if (axios.isAxiosError(error)) {
       showToast(toast, {
         type: "error",
-        title: "Error",
+        title: "Erro",
         description: error.response?.data || "An error occurred.",
       });
     } else {

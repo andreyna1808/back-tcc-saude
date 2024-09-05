@@ -15,17 +15,17 @@ import { FC, useState } from "react";
 import { AiOutlineComment, AiOutlineLike } from "react-icons/ai";
 import { IoMdClose } from "react-icons/io";
 
-interface ModalComponentProps {
+interface QuestionSwitchProps {
   data: any;
   typeUser: string;
-  onLikeOrDeslike: (data: any) => void;
-  onPublishComent?: (dataQuestion: any, answer: string) => void;
+  onLikeOrDeslike: (data: any, type?: string) => void;
+  onPublishComment?: (dataQuestion: any, answer: string) => void;
 }
 
-export const QuestionSwitch: FC<ModalComponentProps> = ({
+export const QuestionSwitch: FC<QuestionSwitchProps> = ({
   data,
   typeUser,
-  onPublishComent,
+  onPublishComment,
   onLikeOrDeslike,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -132,7 +132,7 @@ export const QuestionSwitch: FC<ModalComponentProps> = ({
                 _hover={{ color: "green" }}
                 fontSize="12px"
                 onClick={() => {
-                  onPublishComent && onPublishComent(data, contentAnswer);
+                  onPublishComment && onPublishComment(data, contentAnswer);
                   onCleanAnswer();
                 }}
                 mr={2}
@@ -163,6 +163,7 @@ export const QuestionSwitch: FC<ModalComponentProps> = ({
           notfound={"Essa pergunta ainda não teve respostas"}
           onLike={onLikeOrDeslike}
           onViewData={() => {}}
+          onRemove={() => {}}
         />
       </ModalBody>
     </ModalContent>

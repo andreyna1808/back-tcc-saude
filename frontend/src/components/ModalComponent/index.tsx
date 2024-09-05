@@ -1,26 +1,7 @@
-import {
-  Box,
-  Button,
-  Center,
-  Flex,
-  HStack,
-  Input,
-  InputGroup,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  Tooltip,
-} from "@chakra-ui/react";
+import { Modal, ModalOverlay } from "@chakra-ui/react";
 import { FC, useRef, useState } from "react";
-import { AiOutlineComment, AiOutlineLike } from "react-icons/ai";
-import { CardComponent } from "../CardComponent";
-import { IoMdClose } from "react-icons/io";
 import { QuestionSwitch } from "./switch/questions";
+import { AnswerSwitch } from "./switch/answers";
 
 interface ModalComponentProps {
   isOpen: boolean;
@@ -31,25 +12,23 @@ interface ModalComponentProps {
   };
   typeUser: string;
   setViewDataModal: any;
-  onLikeOrDeslike: (data: any) => void;
-  onPublishComent?: (dataQuestion: any, answer: string) => void;
+  onLikeOrDeslike: (data: any, type?: string) => void;
+  onPublishComment?: (dataQuestion: any, answer: string) => void;
+  onEditComment?: (dataQuestion: any, answer: string, type: string) => void;
 }
 
 export const ModalComponent: FC<ModalComponentProps> = ({
   isOpen,
   typeUser,
   setIsOpen,
+  onEditComment,
   viewDataModal,
-  onPublishComent,
+  onPublishComment,
   onLikeOrDeslike,
   setViewDataModal,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [answer, setAnswer] = useState(false);
   const { data, type } = viewDataModal;
   const btnRef = useRef(null);
-
-  console.log("ModalComponent: ", data, type, typeUser);
 
   const onClose = () => {
     setIsOpen(false);
@@ -60,31 +39,18 @@ export const ModalComponent: FC<ModalComponentProps> = ({
     switch (type) {
       case "answers":
         return (
-          <ModalContent bg="#343A40">
-            <ModalHeader>
-              <HStack h="30px" w="100%" ml={2}>
-                <Text>
-                  {data?.anonymous ? "Anônimo" : data?.userData.nickname}
-                </Text>
-              </HStack>
-            </ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Text></Text>
-            </ModalBody>
-            <ModalFooter>
-              <Button w="60px" onClick={onClose}>
-                Sair
-              </Button>
-            </ModalFooter>
-          </ModalContent>
+          <AnswerSwitch
+            data={data}
+            onLikeOrDeslike={onLikeOrDeslike}
+            onEditComment={onEditComment}
+          />
         );
       case "questions":
         return (
           <QuestionSwitch
             data={data}
             typeUser={typeUser}
-            onPublishComent={onPublishComent}
+            onPublishComment={onPublishComment}
             onLikeOrDeslike={onLikeOrDeslike}
           />
         );

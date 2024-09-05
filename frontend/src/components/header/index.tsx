@@ -8,19 +8,29 @@ import {
   Avatar,
   MenuList,
   Center,
+  useToast,
 } from "@chakra-ui/react";
-import { FaUserCircle } from "react-icons/fa"; 
+import { FaUserCircle } from "react-icons/fa";
+import { postLogout } from "@/services/request/post/postLogout";
+import { useAuth } from "@/context/AuthContext";
 
 interface HeaderProps {
   user: any;
   type: string;
-  onLogout?: () => void;
-  onViewProfile?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ user, onLogout, onViewProfile }) => {
+const Header: React.FC<HeaderProps> = ({ user }) => {
+  const toast = useToast();
+  const { token, login } = useAuth();
+
+  const onLogout = async () => {
+    await postLogout(token!, toast, login);
+  };
+
+  const onViewProfile = () => {};
+
   return (
-    <Flex as="header" bg="#013220" color="white" h="50px" alignItems="center">
+    <Flex as="header" bg="#1A202C" color="white" h="50px" alignItems="center">
       <Text
         fontSize="xl"
         fontWeight="bold"
