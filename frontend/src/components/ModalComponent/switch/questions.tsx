@@ -93,10 +93,10 @@ export const QuestionSwitch: FC<QuestionSwitchProps> = ({
             <Text className="text">{data?.likes || 0}</Text>
           </HStack>
           <HStack
-            _hover={{
+            _hover={ typeUser == "doctors" ? {
               ".icon": { fill: "green" },
               ".text": { color: "green" },
-            }}
+            }: {}}
             cursor={typeUser == "doctors" ? "pointer" : "auto"}
             onClick={() => (typeUser == "doctors" ? setAnswer(true) : {})}
           >
