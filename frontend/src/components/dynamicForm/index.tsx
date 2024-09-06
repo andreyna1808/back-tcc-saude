@@ -12,10 +12,11 @@ import {
 
 interface DynamicFormProps {
   typeConfirm: "Entrar" | "Cadastrar" | "Atualizar";
-  typeChange: "Realizar Login" | "Realizar Cadastro" | "Voltar";
+  typeChange: "Realizar Login" | "Realizar Cadastro" | "Voltar" | "Cancelar";
   fields: string[];
   onSubmit: (data: Record<string, any>) => void;
   onChangeEvent: () => void;
+  defaultValues?: Record<string, any>;
 }
 
 export const DynamicForm: React.FC<DynamicFormProps> = ({
@@ -24,12 +25,15 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
   typeChange,
   typeConfirm,
   onChangeEvent,
+  defaultValues = {},
 }) => {
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues,
+  });
 
   const renderField = (field: string) => {
     const isRequired = {
@@ -149,32 +153,29 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <HStack flexWrap="wrap">
           {fields.map((field, index) => (
-            <Box key={index} flex="1 0 auto" minW="300px">
+            <Box key={index} minW="300px" mr={4}>
               {renderField(field)}
             </Box>
           ))}
-          <Button
-            type="submit"
-            bg="#228B22"
-            _hover={{ bg: "green" }}
-            color="white"
-            mt={4}
-            px={4}
-            w="20%"
-          >
-            {typeConfirm}
-          </Button>
-          <Button
-            w="25%"
-            bg="#a0a0a0"
-            color="black"
-            _hover={{ bg: "gray" }}
-            mt={4}
-            px={4}
-            onClick={onChangeEvent}
-          >
-            {typeChange}
-          </Button>
+          <HStack mt={4}>
+            <Button
+              type="submit"
+              bg="#228B22"
+              _hover={{ bg: "green" }}
+              color="white"
+            >
+              {typeConfirm}
+            </Button>
+            <Button
+              bg="#a0a0a0"
+              color="black"
+              _hover={{ bg: "gray" }}
+              onClick={onChangeEvent}
+            >
+              {typeChange}
+            </Button>
+          </HStack>
+
         </HStack>
       </form>
     </Flex>

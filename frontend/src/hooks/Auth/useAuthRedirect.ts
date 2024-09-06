@@ -1,23 +1,28 @@
-import { useEffect } from "react";
-import { useRouter } from "next/router";
 import { useAuth } from "@/context/AuthContext";
-
-const publicRoutes = ["/", "/auth/login", "/auth/register"];
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 const useAuthRedirect = () => {
-  const { token } = useAuth();
   const router = useRouter();
+  const { token } = useAuth();
 
   useEffect(() => {
-    const isPublicRoute = publicRoutes.includes(router.pathname);
-    const isProtectedRoute = router.pathname.startsWith("/feed");
+    const tokenStorage = localStorage.getItem("authToken");
+    const { pathname } = router;
 
-    if (!token && isProtectedRoute) {
-      router.push("/");
-    } else if (token && isPublicRoute) {
+    if (
+      tokenStorage != "null" &&
+      (pathname === "/auth/login" || pathname === "/auth/register")
+    ) {
       router.push("/feed");
+    } else if (
+      tokenStorage == "null" &&
+      !(pathname === "/auth/login" || pathname === "/auth/register")
+    ) {
+      router.push("/");
     }
-  }, [token, router]);
+  }, [router, token]);
+  return null;
 };
 
 export default useAuthRedirect;
