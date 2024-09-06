@@ -23,11 +23,12 @@ interface AnswerSwitchProps {
   data: any;
   onLikeOrDeslike: (data: any, type?: string) => void;
   onEditComment?: (dataQuestion: any, answer: string, type: string) => void;
-  likedAnswers: any;
+  userData: any;
 }
 
 export const AnswerSwitch: FC<AnswerSwitchProps> = ({
   data,
+  userData,
   onLikeOrDeslike,
   onEditComment,
 }) => {
@@ -86,12 +87,20 @@ export const AnswerSwitch: FC<AnswerSwitchProps> = ({
         </Flex>
         <HStack h="40px" w="100%" mt={2} justifyContent="space-between">
           <LikeCommentRemove
-            onClick={() => onLikeOrDeslike((data?.questionData || data), "questions")}
+            onClick={() =>
+              onLikeOrDeslike(data?.questionData || data, "questions")
+            }
             IconType={AiOutlineLike}
             textValue={data?.questionData?.likes || 0}
+            defaultColor={
+              userData?.likedQuestions?.find(
+                (question: any) => question.questionId == data.questionData.id
+              )
+                ? "#0d7200"
+                : "white"
+            }
           />
         </HStack>
-
         <HStack justifyContent="space-between" alignItems="center" my={2}>
           <Text fontSize={20}>Sua resposta</Text>
           <LikeCommentRemove
@@ -199,6 +208,13 @@ export const AnswerSwitch: FC<AnswerSwitchProps> = ({
                     onClick={() => onLikeOrDeslike(data)}
                     IconType={AiOutlineLike}
                     textValue={data?.likes || 0}
+                    defaultColor={
+                      userData?.likedAnswers?.find(
+                        (question: any) => question.answerId == data.id
+                      )
+                        ? "#0d7200"
+                        : "white"
+                    }
                   />
                 </HStack>
               </>

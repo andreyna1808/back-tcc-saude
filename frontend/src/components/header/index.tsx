@@ -52,7 +52,10 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
           <Center justifyContent="space-around">
             <Avatar
               name={user?.name}
-              src={`/api/${user?.profileImageUrl.split("/uploads/")[1]}`}
+              src={
+                user?.profileImageUrl &&
+                `/api/${user?.profileImageUrl.split("/uploads/")[1]}`
+              }
               size="sm"
               bg="white"
               borderWidth="2px"

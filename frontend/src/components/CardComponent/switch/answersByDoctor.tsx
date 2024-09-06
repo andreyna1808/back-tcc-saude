@@ -85,6 +85,13 @@ export const AnswersByDoctorSwitch: FC<AnswersSwitchByDoctorProps> = ({
             onClick={() => onLike(item)}
             IconType={AiOutlineLike}
             textValue={item?.likes || 0}
+            defaultColor={
+              likedAnswers?.find(
+                (question: any) => question.answerId == item.id
+              )
+                ? "#0d7200"
+                : "white"
+            }
           />
           <LikeCommentRemove
             onClick={() => onRemove(item, "answers")}
