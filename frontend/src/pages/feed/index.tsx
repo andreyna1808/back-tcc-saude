@@ -170,6 +170,7 @@ const Feed = () => {
       <ModalComponent
         isOpen={isOpen}
         typeUser={typeUser}
+        userData={userData}
         setIsOpen={setIsOpen}
         viewDataModal={viewDataModal}
         onEditComment={onEditComment}
@@ -187,17 +188,19 @@ const Feed = () => {
           onLike={onLikeOrDeslike}
           onViewData={onViewData}
           onRemove={onRemove}
+          userData={userData}
         />
 
         <CardComponent
           title={getTitle(typeUser, true)}
           data={getUserAnsweredQuestions(questions, userData, typeUser)}
-          type={typeUser === "doctors" ? "answersByDoctor" : "answers"}
+          type={typeUser === "doctors" ? "answersByDoctor" : "questionByUser"}
           notfound={getNotFound(typeUser, true)}
           onLike={onLikeOrDeslike}
           onViewData={onViewData}
           onRemove={onRemove}
           typeUser={typeUser}
+          userData={userData}
           onCreateQuestion={onCreateQuestion}
         />
       </HStack>

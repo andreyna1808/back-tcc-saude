@@ -23,6 +23,7 @@ interface AnswerSwitchProps {
   data: any;
   onLikeOrDeslike: (data: any, type?: string) => void;
   onEditComment?: (dataQuestion: any, answer: string, type: string) => void;
+  likedAnswers: any;
 }
 
 export const AnswerSwitch: FC<AnswerSwitchProps> = ({

@@ -52,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
           <Center justifyContent="space-around">
             <Avatar
               name={user?.name}
-              src={user?.profileImageUrl}
+              src={`/api/${user?.profileImageUrl.split("/uploads/")[1]}`}
               size="sm"
               bg="white"
               borderWidth="2px"
@@ -68,7 +68,13 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
             </Text>
           </Center>
         </MenuButton>
-        <MenuList bg="gray.800" border="none">
+        <MenuList
+          bg="gray.800"
+          border="none"
+          borderColor="rgba(255, 255, 255, 0.8)"
+          boxShadow="0 4px 6px rgba(0, 0, 0, 1)"
+          borderRadius="md"
+        >
           <MenuItem
             bg="gray.800"
             _hover={{ bg: "#0d7200" }}

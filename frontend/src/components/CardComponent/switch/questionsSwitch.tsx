@@ -7,12 +7,14 @@ interface QuestionsSwitchProps {
   data: any;
   onLike: (data: any) => void;
   onViewData: (data: any, type: string) => void;
+  likedQuestions: any;
 }
 
 export const QuestionsSwitch: FC<QuestionsSwitchProps> = ({
   data,
   onLike,
   onViewData,
+  likedQuestions,
 }) => {
   return data?.map((item: any, idx: number) => (
     <Card key={`${item?.id}-${idx}`} minH="200px" width="600px">
@@ -53,6 +55,13 @@ export const QuestionsSwitch: FC<QuestionsSwitchProps> = ({
             onClick={() => onLike(item)}
             IconType={AiOutlineLike}
             textValue={item?.likes || 0}
+            defaultColor={
+              likedQuestions?.find(
+                (question: any) => question.questionId == item.id
+              )
+                ? "#0d7200"
+                : "white"
+            }
           />
           <LikeCommentRemove
             onClick={() => onViewData(item, "questions")}

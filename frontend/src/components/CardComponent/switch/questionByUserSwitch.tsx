@@ -4,21 +4,21 @@ import { FC, useState } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { MdDeleteOutline } from "react-icons/md";
 
-interface AnswersSwitchProps {
+interface QuestionByUserSwitchProps {
   data: Array<any>;
   onViewData: (data: any, type: string) => void;
-  onRemove?: (data: any, type: string) => void;
+  onRemove: (data: any, type: string) => void;
   onLike: (data: any) => void;
   widthCard?: string;
   likedAnswers?: any;
 }
 
-export const AnswersSwitch: FC<AnswersSwitchProps> = ({
+export const QuestionByUserSwitch: FC<QuestionByUserSwitchProps> = ({
   data,
-  widthCard = "600px",
   likedAnswers,
+  widthCard = "600px",
   onLike,
-  //   onRemove,
+  onRemove,
   onViewData,
 }) => {
   const [expandedItems, setExpandedItems] = useState<any>({});
@@ -86,18 +86,18 @@ export const AnswersSwitch: FC<AnswersSwitchProps> = ({
             textValue={item?.likes || 0}
             defaultColor={
               likedAnswers?.find(
-                (answer: any) => answer.answerId == item.id
+                (answer: any) => answer.questionId == item.id
               )
                 ? "#0d7200"
                 : "white"
             }
           />
-          {/* <LikeCommentRemove
+          <LikeCommentRemove
             colorHover="#ff3a3a"
             onClick={() => onRemove(item, "questions")}
             IconType={MdDeleteOutline}
             textValue={"Remover"}
-          /> */}
+          />
         </HStack>
       </CardBody>
     </Card>

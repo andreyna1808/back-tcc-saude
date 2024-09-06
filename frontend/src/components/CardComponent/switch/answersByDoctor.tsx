@@ -10,6 +10,7 @@ interface AnswersSwitchByDoctorProps {
   onLike: (data: any) => void;
   onRemove: (data: any, type: string) => void;
   widthCard?: string;
+  likedAnswers?: any
 }
 
 export const AnswersByDoctorSwitch: FC<AnswersSwitchByDoctorProps> = ({
@@ -18,6 +19,7 @@ export const AnswersByDoctorSwitch: FC<AnswersSwitchByDoctorProps> = ({
   onRemove,
   onViewData,
   widthCard = "600px",
+  likedAnswers,
 }) => {
   const [expandedItems, setExpandedItems] = useState<any>({});
 
