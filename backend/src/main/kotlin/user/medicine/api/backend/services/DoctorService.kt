@@ -115,7 +115,7 @@ class DoctorService(
             email = updatedDoctorDTO.email ?: existingDoctor.email,
             password = updatedDoctorDTO.password ?: existingDoctor.password,
             crm = updatedCrm,
-            profileImageUrl = updatedDoctorDTO.profileImageUrl // Aceita null se for explicitamente fornecido
+            profileImageUrl = updatedDoctorDTO.profileImageUrl ?: existingDoctor.profileImageUrl,
         )
 
         // Salva o médico atualizado no banco de dados e retorna o médico atualizado
