@@ -48,7 +48,7 @@ export const ModalComponent: FC<ModalComponentProps> = ({
             data={data}
             onLikeOrDeslike={onLikeOrDeslike!}
             onEditComment={onEditComment}
-            likedAnswers={userData?.likedAnswers}
+            userData={userData}
           />
         );
       case "questions":
