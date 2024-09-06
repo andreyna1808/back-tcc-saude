@@ -29,6 +29,7 @@ const Feed = () => {
   const [ssr, setSsr] = useState(true);
   const { token, typeUser } = useAuth();
   const [userData, setUserData] = useState<any>();
+  const [loading, setLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [questions, setQuestions] = useState([]);
   const [updateData, setUpdateData] = useState(false);
@@ -39,8 +40,7 @@ const Feed = () => {
   const router = useRouter();
 
   const infoUser = async (selected: string, id: string, token: string) => {
-    // se for doctor pegar answers by doctor id se for user pegar questions by userID
-
+    setLoading(true)
     const [userResp, questionResp] = await Promise.all([
       getInfoUser(selected, id, token),
       getQuestions(token),
@@ -57,6 +57,7 @@ const Feed = () => {
 
       setViewDataModal({ ...viewDataModal, data: updateModal });
     }
+    setLoading(false)
   };
 
   const onLikeOrDeslike = async (data: any, type?: string) => {
@@ -160,7 +161,7 @@ const Feed = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, ssr, typeUser, router, updateData]);
 
-  if (ssr || !token || !typeUser) {
+  if (ssr || !token || !typeUser || loading) {
     return <Loading />;
   }
 

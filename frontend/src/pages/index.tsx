@@ -3,10 +3,8 @@ import { useRouter } from "next/router";
 import { useAppContext } from "@/context/AppContext";
 import { GeneralBody } from "@/components/generalBody";
 import { HeaderLink } from "@/components/headerLink";
-import useAuthRedirect from "@/hooks/Auth/useAuthRedirect";
 
 const Home = () => {
-  useAuthRedirect();
   const router = useRouter();
   const { selected, setSelected } = useAppContext();
 

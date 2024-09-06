@@ -13,6 +13,7 @@ import {
 import { FaUserCircle } from "react-icons/fa";
 import { postLogout } from "@/services/request/post/postLogout";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/router";
 
 interface HeaderProps {
   user: any;
@@ -21,13 +22,13 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ user }) => {
   const toast = useToast();
+  const router = useRouter();
   const { token, login } = useAuth();
 
   const onLogout = async () => {
     await postLogout(token!, toast, login);
+    router.push("/")
   };
-
-  const onViewProfile = () => {};
 
   return (
     <Flex as="header" bg="#1A202C" color="white" h="50px" alignItems="center">
@@ -67,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
               whiteSpace="nowrap"
               overflow="hidden"
             >
-              Olá, {user?.name || "usuário"}
+              Olá, {user?.nickname || user?.name || "Usuário..."}
             </Text>
           </Center>
         </MenuButton>
@@ -81,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
           <MenuItem
             bg="gray.800"
             _hover={{ bg: "#0d7200" }}
-            onClick={onViewProfile}
+            onClick={() => router.push("/feed/profile")}
           >
             Ver Perfil
           </MenuItem>
