@@ -130,7 +130,8 @@ class UserService(
             name = updatedUserDTO.name ?: existingUser.name,
             email = updatedUserDTO.email ?: existingUser.email,
             nickname = updatedNickname,
-            password = updatedUserDTO.password ?: existingUser.password
+            password = updatedUserDTO.password ?: existingUser.password,
+            profileImageUrl = updatedUserDTO.profileImageUrl
         )
 
         // Salva o usuário atualizado no banco de dados e retorna o usuário atualizado

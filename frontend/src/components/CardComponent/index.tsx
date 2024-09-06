@@ -1,17 +1,19 @@
 import { Card, CardBody, Center, HStack, Text, VStack } from "@chakra-ui/react";
 import { FC, useState } from "react";
-import { AnswersSwitch } from "./switch/answersSwitch";
+import { QuestionByUserSwitch } from "./switch/questionByUserSwitch";
 import { QuestionsSwitch } from "./switch/questionsSwitch";
 import { AnswersByDoctorSwitch } from "./switch/answersByDoctor";
 import { LikeCommentRemove } from "../likeCommentRemove";
 import { MdModeEdit } from "react-icons/md";
 import { ModalComponent } from "../ModalComponent";
+import { AnswersSwitch } from "./switch/answersSwitch";
 
 interface CardComponentProps {
   title: string;
   data: any;
+  userData: any;
   typeUser?: string;
-  type: "questions" | "answers" | "answersByDoctor";
+  type: "questions" | "answers" | "questionByUser" | "answersByDoctor";
   notfound: string;
   onViewData: (data: any, type: string) => void;
   onRemove: (data: any, type: string) => void;
@@ -25,6 +27,7 @@ export const CardComponent: FC<CardComponentProps> = ({
   data,
   type,
   title,
+  userData,
   notfound,
   onCreateQuestion,
   typeUser,
@@ -42,22 +45,15 @@ export const CardComponent: FC<CardComponentProps> = ({
 
   const typeData = () => {
     switch (type) {
-      case "answers":
+      case "questionByUser":
         return (
-          <AnswersSwitch
+          <QuestionByUserSwitch
             data={data}
             onLike={onLike}
             onRemove={onRemove}
             widthCard={widthCard}
             onViewData={onViewData}
-          />
-        );
-      case "questions":
-        return (
-          <QuestionsSwitch
-            data={data}
-            onLike={onLike}
-            onViewData={onViewData}
+            likedAnswers={userData?.likedQuestions}
           />
         );
 
@@ -69,6 +65,27 @@ export const CardComponent: FC<CardComponentProps> = ({
             onRemove={onRemove}
             widthCard={widthCard}
             onViewData={onViewData}
+            likedAnswers={userData?.likedAnswers}
+          />
+        );
+
+      case "questions":
+        return (
+          <QuestionsSwitch
+            data={data}
+            onLike={onLike}
+            onViewData={onViewData}
+            likedQuestions={userData?.likedQuestions}
+          />
+        );
+
+      case "answers":
+        return (
+          <AnswersSwitch
+            data={data}
+            onLike={onLike}
+            onViewData={onViewData}
+            likedAnswers={userData?.likedAnswers}
           />
         );
       default:
@@ -126,6 +143,7 @@ export const CardComponent: FC<CardComponentProps> = ({
             type: "createQuestion",
           }}
           setViewDataModal={setViewDataModal}
+          userData={userData}
         />
       )}
     </VStack>

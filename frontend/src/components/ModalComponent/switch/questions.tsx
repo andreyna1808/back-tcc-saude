@@ -1,4 +1,5 @@
 import { CardComponent } from "@/components/CardComponent";
+import { LikeCommentRemove } from "@/components/likeCommentRemove";
 import {
   Center,
   Flex,
@@ -20,11 +21,13 @@ interface QuestionSwitchProps {
   typeUser: string;
   onLikeOrDeslike: (data: any, type?: string) => void;
   onPublishComment?: (dataQuestion: any, answer: string) => void;
+  userData: any;
 }
 
 export const QuestionSwitch: FC<QuestionSwitchProps> = ({
   data,
   typeUser,
+  userData,
   onPublishComment,
   onLikeOrDeslike,
 }) => {
@@ -81,31 +84,27 @@ export const QuestionSwitch: FC<QuestionSwitchProps> = ({
           </Flex>
         </Flex>
         <HStack h="40px" w="100%" mt={2} justifyContent="space-between">
-          <HStack
-            _hover={{
-              ".icon": { fill: "green" },
-              ".text": { color: "green" },
-            }}
+          <LikeCommentRemove
             onClick={() => onLikeOrDeslike(data)}
-            cursor="pointer"
-          >
-            <AiOutlineLike size={24} className="icon" />
-            <Text className="text">{data?.likes || 0}</Text>
-          </HStack>
-          <HStack
-            _hover={ typeUser == "doctors" ? {
-              ".icon": { fill: "green" },
-              ".text": { color: "green" },
-            }: {}}
-            cursor={typeUser == "doctors" ? "pointer" : "auto"}
+            IconType={AiOutlineLike}
+            textValue={data?.likes || 0}
+            defaultColor={
+              userData?.likedQuestions?.find(
+                (question: any) => question.questionId == data.id
+              )
+                ? "#0d7200"
+                : "white"
+            }
+          />
+          <LikeCommentRemove
             onClick={() => (typeUser == "doctors" ? setAnswer(true) : {})}
-          >
-            <AiOutlineComment size={24} className="icon" />
-            <Text className="text">{data?.answers?.length || 0}</Text>
-            <Text className="text">
-              {typeUser == "doctors" ? "Responder" : ""}
-            </Text>
-          </HStack>
+            IconType={AiOutlineComment}
+            textValue={`${data?.answers?.length || 0} ${
+              typeUser == "doctors" ? "Responder" : ""
+            }`}
+            colorHover={typeUser == "doctors" ? "green" : "white"}
+            cursor={typeUser == "doctors" ? "pointer" : "auto"}
+          />
         </HStack>
         {answer && (
           <HStack
@@ -164,6 +163,7 @@ export const QuestionSwitch: FC<QuestionSwitchProps> = ({
           onLike={onLikeOrDeslike}
           onViewData={() => {}}
           onRemove={() => {}}
+          userData={userData}
         />
       </ModalBody>
     </ModalContent>

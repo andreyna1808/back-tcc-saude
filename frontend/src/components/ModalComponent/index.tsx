@@ -13,6 +13,7 @@ interface ModalComponentProps {
   };
   typeUser: string;
   setViewDataModal?: any;
+  userData: any;
   onLikeOrDeslike?: (data: any, type?: string) => void;
   onPublishComment?: (dataQuestion: any, answer: string) => void;
   onEditComment?: (dataQuestion: any, answer: string, type: string) => void;
@@ -22,6 +23,7 @@ interface ModalComponentProps {
 export const ModalComponent: FC<ModalComponentProps> = ({
   isOpen,
   typeUser,
+  userData,
   setIsOpen,
   onEditComment,
   viewDataModal,
@@ -46,6 +48,7 @@ export const ModalComponent: FC<ModalComponentProps> = ({
             data={data}
             onLikeOrDeslike={onLikeOrDeslike!}
             onEditComment={onEditComment}
+            likedAnswers={userData?.likedAnswers}
           />
         );
       case "questions":
@@ -55,10 +58,16 @@ export const ModalComponent: FC<ModalComponentProps> = ({
             typeUser={typeUser}
             onPublishComment={onPublishComment}
             onLikeOrDeslike={onLikeOrDeslike!}
+            userData={userData}
           />
         );
       case "createQuestion":
-        return <CreateQuestion onCreateQuestion={onCreateQuestion} onClose={onClose} />;
+        return (
+          <CreateQuestion
+            onCreateQuestion={onCreateQuestion}
+            onClose={onClose}
+          />
+        );
       default:
         return <></>;
     }

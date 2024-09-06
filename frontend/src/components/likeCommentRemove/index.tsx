@@ -3,12 +3,13 @@ import { FC } from "react";
 import { IconType } from "react-icons";
 
 interface LikeCommentRemovePros {
-  colorHover?: "green" | "#ff3a3a";
+  colorHover?: "green" | "#ff3a3a" | "white";
   onClick: any;
   IconType: IconType;
   textValue: string;
   sizeIcon?: number;
   cursor?: string;
+  defaultColor?: string
 }
 
 export const LikeCommentRemove: FC<LikeCommentRemovePros> = ({
@@ -18,6 +19,7 @@ export const LikeCommentRemove: FC<LikeCommentRemovePros> = ({
   onClick,
   textValue,
   sizeIcon = 24,
+  defaultColor = "white"
 }) => (
   <HStack
     _hover={{
@@ -27,7 +29,7 @@ export const LikeCommentRemove: FC<LikeCommentRemovePros> = ({
     onClick={onClick}
     cursor={cursor}
   >
-    <IconType size={sizeIcon} className="icon" />
-    <Text className="text">{textValue}</Text>
+    <IconType size={sizeIcon} className="icon" fill={defaultColor} />
+    <Text className="text" color={defaultColor}>{textValue}</Text>
   </HStack>
 );
