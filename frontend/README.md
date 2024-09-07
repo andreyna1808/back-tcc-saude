@@ -22,7 +22,7 @@ Versão node do projeto utilizada foi a 20.17.0
 
 ## Tecnologias utilizadas
 
-[![Tools](https://skillicons.dev/icons?i=html,css,js,nextjs)](https://skillicons.dev)
+[![Tools](https://skillicons.dev/icons?i=html,css,ts,nextjs)](https://skillicons.dev)
 
 ## Email para contato: andreyna.m.carvalho@gmail.com
 
