@@ -2,7 +2,6 @@ import { LikeCommentRemove } from "@/components/likeCommentRemove";
 import { Box, Card, CardBody, Center, HStack, Text } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { AiOutlineLike } from "react-icons/ai";
-import { MdDeleteOutline } from "react-icons/md";
 
 interface AnswersSwitchProps {
   data: Array<any>;
@@ -37,9 +36,10 @@ export const AnswersSwitch: FC<AnswersSwitchProps> = ({
         flexDirection="column"
         justifyContent="space-between"
       >
-        <HStack h="30px" w="95%" justify="space-between" ml={2}>
-          <Text>{`Nickname: ${item?.userData?.nickname}`}</Text>
-          <Text>{`Anônimo: ${item?.anonymous ? "Sim" : "Não"}`}</Text>
+        <HStack h="30px" w="100%" justify="space-between" ml={2}>
+          <Text>{`Nome: ${item?.doctorData?.name}`}</Text>
+          <Text>{`CRM: ${item?.doctorData?.crm}`}</Text>
+          <Text>{`Especialidade: ${item?.doctorData?.specialty}`}</Text>
         </HStack>
         <Center
           justifyContent="space-between"

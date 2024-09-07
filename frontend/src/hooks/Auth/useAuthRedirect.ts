@@ -7,16 +7,15 @@ const useAuthRedirect = () => {
   const { token } = useAuth();
 
   useEffect(() => {
-    const tokenStorage = localStorage.getItem("authToken");
     const { pathname } = router;
 
     if (
-      tokenStorage != "null" &&
+      !!token &&
       (pathname === "/auth/login" || pathname === "/auth/register")
     ) {
       router.push("/feed");
     } else if (
-      tokenStorage == "null" &&
+      !token &&
       !(pathname === "/auth/login" || pathname === "/auth/register")
     ) {
       router.push("/");
