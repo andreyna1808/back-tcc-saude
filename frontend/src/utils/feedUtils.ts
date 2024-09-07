@@ -41,7 +41,7 @@ export const getUserAnsweredQuestions = (
   typeUser: string
 ) => {
   if (typeUser === "doctors") {
-    return userData;
+    return userData?.answers;
   }
   return questions?.filter((question: any) =>
     userData?.questions?.some(
