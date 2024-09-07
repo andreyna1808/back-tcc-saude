@@ -25,7 +25,7 @@ Ou...
 
 ## Tecnologias utilizadas
 
-[![Tools](https://skillicons.dev/icons?i=html,css,js,nextjs,kotlin,spring,mongo)](https://skillicons.dev)
+[![Tools](https://skillicons.dev/icons?i=html,css,ts,nextjs,kotlin,spring,mongo)](https://skillicons.dev)
 
 ## Email para contato: andreyna.m.carvalho@gmail.com
 
